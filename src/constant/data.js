@@ -3,47 +3,28 @@ export const menuItems = [
     isHeadr: true,
     title: "menu",
   },
-
   {
     title: "Dashboard",
-    icon: "heroicons-outline:home",
-    isOpen: true,
+    icon: "heroicons:arrow-trending-up",
+    link: "dashboard",
+    isHide: false,
+  },
+  {
+    title: "Projects",
+    icon: "heroicons-outline:document",
+    link: "#",
     isHide: true,
     child: [
       {
-        childtitle: "Analytics Dashboard",
-        childlink: "dashboard",
+        childtitle: "Projects",
+        childlink: "projects",
       },
       {
-        childtitle: "Ecommerce Dashboard",
-        childlink: "ecommerce",
-      },
-      {
-        childtitle: "Project  Dashbaord",
-        childlink: "project",
-      },
-      {
-        childtitle: " CRM Dashbaord",
-        childlink: "crm",
-      },
-      {
-        childtitle: "Banking Dashboard",
-        childlink: "banking",
+        childtitle: "Add Project",
+        childlink: "add-project",
       },
     ],
   },
-  {
-    title: "changelog",
-    icon: "heroicons:arrow-trending-up",
-    link: "changelog",
-    isHide: false,
-    badge: "1.0.0",
-  },
-  {
-    isHeadr: true,
-    title: "apps",
-  },
-
   {
     title: "Chat",
     isHide: true,
@@ -78,22 +59,7 @@ export const menuItems = [
     link: "todo",
   },
 
-  {
-    title: "Projects",
-    icon: "heroicons-outline:document",
-    link: "#",
-    isHide: true,
-    child: [
-      {
-        childtitle: "Projects",
-        childlink: "projects",
-      },
-      {
-        childtitle: "Project Details",
-        childlink: "project-details",
-      },
-    ],
-  },
+  
   {
     isHeadr: true,
     title: "Pages",

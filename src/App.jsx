@@ -3,11 +3,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 // home pages  & dashboard
 //import Dashboard from "./pages/dashboard";
-const Dashboard = lazy(() => import("./pages/dashboard"));
-const Ecommerce = lazy(() => import("./pages/dashboard/ecommerce"));
-const CrmPage = lazy(() => import("./pages/dashboard/crm"));
-const ProjectPage = lazy(() => import("./pages/dashboard/project"));
-const BankingPage = lazy(() => import("./pages/dashboard/banking"));
+const Dashboard = lazy(() => import("./pages/dashboard/project"));
+const AddProject = lazy(() => import("./pages/projects/AddProject"));
+const Project = lazy(() => import("./pages/projects/projects"));
 
 const Login = lazy(() => import("./pages/auth/login"));
 const Login2 = lazy(() => import("./pages/auth/login2"));
@@ -210,10 +208,9 @@ function App() {
         />
         <Route path="/*" element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="ecommerce" element={<Ecommerce />} />
-          <Route path="crm" element={<CrmPage />} />
-          <Route path="project" element={<ProjectPage />} />
-          <Route path="banking" element={<BankingPage />} />
+          <Route path="add-project" element={<AddProject />} />
+          <Route path="projects" element={<Project />} />
+          
           {/* App pages */}
           <Route path="todo" element={<TodoPage />} />
           <Route path="email" element={<EmailPage />} />
