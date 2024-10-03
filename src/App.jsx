@@ -5,9 +5,17 @@ import { Routes, Route, Navigate } from "react-router-dom";
 //import Dashboard from "./pages/dashboard";
 const Dashboard = lazy(() => import("./pages/dashboard/project"));
 const AddProject = lazy(() => import("./pages/projects/AddProject"));
-const Project = lazy(() => import("./pages/projects/projects"));
+const Customers = lazy(() => import("./pages/projects/projects"));
+const Projects = lazy(() => import("./pages/projects/projects"));
+const Tasks = lazy(() => import("./pages/projects/projects"));
+const Users = lazy(() => import("./pages/projects/projects"));
+const Subscriptions = lazy(() => import("./pages/projects/projects"));
+const Roles = lazy(() => import("./pages/projects/projects"));
 
-const Login = lazy(() => import("./pages/auth/login"));
+
+
+
+const Login = lazy(() => import("./pages/auth/login3"));
 const Login2 = lazy(() => import("./pages/auth/login2"));
 const Login3 = lazy(() => import("./pages/auth/login3"));
 const Register = lazy(() => import("./pages/auth/register"));
@@ -209,7 +217,13 @@ function App() {
         <Route path="/*" element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-project" element={<AddProject />} />
-          <Route path="projects" element={<Project />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="tasks" element={<Tasks />} />
+          <Route path="users" element={<Users />} />
+          <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="roles" element={<Roles />} />
+
           
           {/* App pages */}
           <Route path="todo" element={<TodoPage />} />
