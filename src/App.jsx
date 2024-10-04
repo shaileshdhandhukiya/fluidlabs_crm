@@ -18,8 +18,6 @@ const Roles = lazy(() => import("./pages/projects/projects"));
 
 const Login = lazy(() => import("./pages/auth/login3"));
 const Register = lazy(() => import("./pages/auth/register"));
-const Register2 = lazy(() => import("./pages/auth/register2"));
-const Register3 = lazy(() => import("./pages/auth/register3"));
 const ForgotPass = lazy(() => import("./pages/auth/forgot-password"));
 const ForgotPass2 = lazy(() => import("./pages/auth/forgot-password2"));
 const ForgotPass3 = lazy(() => import("./pages/auth/forgot-password3"));
@@ -134,22 +132,7 @@ function App() {
             </Suspense>
           }
         />
-        <Route
-          path="/register2"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Register2 />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/register3"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Register3 />
-            </Suspense>
-          }
-        />
+        
         <Route
           path="/forgot-password"
           element={
