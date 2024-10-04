@@ -34,7 +34,7 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const URL = "http://127.0.0.1:8000/api/login";
+      const URL = "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/login";
 
       const response = await axios.post(URL, data);
 
