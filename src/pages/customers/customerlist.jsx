@@ -5,6 +5,8 @@ import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
 import Button from "@/components/ui/Button";
 import { useNavigate } from "react-router-dom";
+import Switch from "@/components/ui/Switch";
+
 import {
   useTable,
   useRowSelect,
@@ -20,62 +22,67 @@ import customer1 from "@/assets/images/all-img/customer_1.png";
 const advancedTable = [
   {
     id: 1,
-    projectname: "Vento Insurance",
+    company: "Hitesh",
     customer: {
       name: "Jenny Wilson",
       image: customer1,
     },
-    sdate: "3/26/2022",
-    edate: "3/26/2022",
-    status: "In Progress",
+    email: "hitesh@fluidlabs.co.uk",
+    phone: "7621089799",
+    services: "Domain" + " , "+ "Hosting",
+    status: 1,
     action: null,
   },
   {
     id: 2,
-    projectname: "School Project",
+    company: "School Project",
     customer: {
       name: "Jenny Wilson",
       image: customer1,
     },
-    sdate: "3/26/2022",
-    edate: "3/26/2022",
-    status: "Not Started",
+    email: "arun@fluidlabs.co.uk",
+    phone: "7621089799",
+    services: "Domain" + " , "+ "Web",
+    status: 1,
     action: null,
   },
   {
     id: 3,
-    projectname: "Lyness",
+    company: "Lyness",
     customer: {
       name: "Jenny Wilson",
       image: customer1,
     },
-    sdate: "3/26/2022",
-    edate: "3/26/2022",
-    status: "Not Started",
+    email: "arun@fluidlabs.co.uk",
+    phone: "7621089799",
+    services: "Domain" + " , "+ "Email",
+    status: 1,
     action: null,
   },
   {
     id: 4,
-    projectname: "Fluid Labs",
+    company: "Fluid Labs",
     customer: {
       name: "Jenny Wilson",
       image: customer1,
     },
-    sdate: "3/26/2022",
-    edate: "3/26/2022",
-    status: "Hold",
+    email: "arun@fluidlabs.co.uk",
+    phone: "7621089799",
+    services: "Domain" + " , "+ "SSL",
+    status: 0,
     action: null,
   },
   {
     id: 5,
-    projectname: "Andrew Project",
+    company: "Andrew Project",
     customer: {
       name: "Jenny Wilson",
       image: customer1,
     },
-    sdate: "3/26/2022",
-    edate: "3/26/2022",
-    status: "In Progress",
+    email: "arun@fluidlabs.co.uk",
+    phone: "7621089799",
+    services: "Domain" + " , "+ "Hosting",
+    status: 0,
     action: null,
   }
 ];
@@ -89,8 +96,8 @@ const COLUMNS = [
     },
   },
   {
-    Header: "Project Name",
-    accessor: "projectname",
+    Header: "Company",
+    accessor: "company",
     Cell: (row) => {
       return <span>{row?.cell?.value}</span>;
     },
@@ -118,15 +125,22 @@ const COLUMNS = [
     },
   },
   {
-    Header: "Start Date",
-    accessor: "sdate",
+    Header: "Primary Email",
+    accessor: "email",
     Cell: (row) => {
       return <span>{row?.cell?.value}</span>;
     },
   },
   {
-    Header: "End Date",
-    accessor: "edate",
+    Header: "Phone",
+    accessor: "phone",
+    Cell: (row) => {
+      return <span>{row?.cell?.value}</span>;
+    },
+  },
+  {
+    Header: "Services",
+    accessor: "services",
     Cell: (row) => {
       return <span>{row?.cell?.value}</span>;
     },
@@ -136,26 +150,10 @@ const COLUMNS = [
     accessor: "status",
     Cell: (row) => {
       return (
-        <span className="block w-full">
-          <span
-            className={` inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 ${row?.cell?.value === "In Progress"
-              ? "text-success-500 bg-success-500"
-              : ""
-              } 
-            ${row?.cell?.value === "Hold"
-                ? "text-warning-500 bg-warning-500"
-                : ""
-              }
-            ${row?.cell?.value === "Not Started"
-                ? "text-danger-500 bg-danger-500"
-                : ""
-              }
-            
-             `}
-          >
-            {row?.cell?.value}
-          </span>
-        </span>
+        <Switch
+        value={row?.cell?.value} 
+        onChange={() => setChecked(!checked)}
+      />
       );
     },
   },
@@ -192,6 +190,7 @@ const COLUMNS = [
   },
 ];
 
+
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
     const defaultRef = React.useRef();
@@ -214,10 +213,10 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-const ProjectList = ({ title = "Projects List" }) => {
+const Customerlist = ({ title = "Customer List" }) => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => advancedTable, []);
-
+  const [checked, setChecked] = useState(true);
   const navigate = useNavigate();
 
   const tableInstance = useTable(
@@ -280,10 +279,10 @@ const ProjectList = ({ title = "Projects List" }) => {
             <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
             <Button
               icon="heroicons-outline:plus"
-              text="Add Project"
+              text="Add Customers"
               className="bg-slate-800 dark:hover:bg-opacity-70 h-min text-sm font-medium text-slate-50 hover:ring-2 hover:ring-opacity-80 ring-slate-900 hover:ring-offset-1 btn-sm dark:hover:ring-0 dark:hover:ring-offset-0 ml-5"
               iconclassName=" text-lg"
-              onClick={() => navigate('/add-project')}
+              onClick={() => navigate('/add-customers')}
             />
           </div>
         </div>
@@ -425,4 +424,4 @@ const ProjectList = ({ title = "Projects List" }) => {
   );
 };
 
-export default ProjectList;
+export default Customerlist;

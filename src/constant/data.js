@@ -27,9 +27,19 @@ export const menuItems = [
   },
   {
     title: "Customers",
+    icon: "heroicons-outline:document",
+    link: "#",
     isHide: true,
-    icon: "heroicons-outline:chat",
-    link: "customers",
+    child: [
+      {
+        childtitle: "Customers",
+        childlink: "customers",
+      },
+      {
+        childtitle: "Add Customers",
+        childlink: "add-customers",
+      },
+    ],
   },
   {
     title: "Tasks",

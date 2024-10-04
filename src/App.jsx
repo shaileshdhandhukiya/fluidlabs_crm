@@ -5,7 +5,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 //import Dashboard from "./pages/dashboard";
 const Dashboard = lazy(() => import("./pages/dashboard/project"));
 const AddProject = lazy(() => import("./pages/projects/AddProject"));
-const Customers = lazy(() => import("./pages/projects/projects"));
+const Customers = lazy(() => import("./pages/customers/customers"));
+const AddCustomers = lazy(() => import("./pages/customers/addcustomer"));
 const Projects = lazy(() => import("./pages/projects/projects"));
 const Tasks = lazy(() => import("./pages/projects/projects"));
 const Users = lazy(() => import("./pages/projects/projects"));
@@ -219,6 +220,7 @@ function App() {
           <Route path="add-project" element={<AddProject />} />
           <Route path="projects" element={<Projects />} />
           <Route path="customers" element={<Customers />} />
+          <Route path="add-customers" element={<AddCustomers />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="users" element={<Users />} />
           <Route path="subscriptions" element={<Subscriptions />} />
