@@ -68,16 +68,18 @@ export const authSlice = createSlice({
       state.isAuth = action.payload;
       // save isAuth in local storage
       window.localStorage.setItem("isAuth", JSON.stringify(state.isAuth));
-      toast.success("User logged in successfully", {
-        position: "top-right",
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+
+      // toast.success("User logged in successfully", {
+      //   position: "top-right",
+      //   autoClose: 1500,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "light",
+      // });
+
     },
     handleLogout: (state, action) => {
       state.isAuth = action.payload;

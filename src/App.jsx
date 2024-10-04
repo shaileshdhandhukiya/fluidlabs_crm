@@ -16,7 +16,7 @@ const Roles = lazy(() => import("./pages/projects/projects"));
 
 
 
-const Login = lazy(() => import("./pages/auth/login3"));
+const Login = lazy(() => import("./pages/auth/login"));
 const Register = lazy(() => import("./pages/auth/register"));
 const ForgotPass = lazy(() => import("./pages/auth/forgot-password"));
 const ForgotPass2 = lazy(() => import("./pages/auth/forgot-password2"));
