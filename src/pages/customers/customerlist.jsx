@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-// import { advancedTable } from "../../constant/table-data";
+import React, { useState, useEffect, useMemo } from "react";
+import axios from "axios"; // Import Axios for API calls
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
@@ -16,244 +16,144 @@ import {
 } from "react-table";
 import GlobalFilter from "../table/react-tables/GlobalFilter";
 
-
-import customer1 from "@/assets/images/all-img/customer_1.png";
-
-const advancedTable = [
-  {
-    id: 1,
-    company: "Hitesh",
-    customer: {
-      name: "Jenny Wilson",
-      image: customer1,
-    },
-    email: "hitesh@fluidlabs.co.uk",
-    phone: "7621089799",
-    services: "Domain" + " , "+ "Hosting",
-    status: 1,
-    action: null,
-  },
-  {
-    id: 2,
-    company: "School Project",
-    customer: {
-      name: "Jenny Wilson",
-      image: customer1,
-    },
-    email: "arun@fluidlabs.co.uk",
-    phone: "7621089799",
-    services: "Domain" + " , "+ "Web",
-    status: 1,
-    action: null,
-  },
-  {
-    id: 3,
-    company: "Lyness",
-    customer: {
-      name: "Jenny Wilson",
-      image: customer1,
-    },
-    email: "arun@fluidlabs.co.uk",
-    phone: "7621089799",
-    services: "Domain" + " , "+ "Email",
-    status: 1,
-    action: null,
-  },
-  {
-    id: 4,
-    company: "Fluid Labs",
-    customer: {
-      name: "Jenny Wilson",
-      image: customer1,
-    },
-    email: "arun@fluidlabs.co.uk",
-    phone: "7621089799",
-    services: "Domain" + " , "+ "SSL",
-    status: 0,
-    action: null,
-  },
-  {
-    id: 5,
-    company: "Andrew Project",
-    customer: {
-      name: "Jenny Wilson",
-      image: customer1,
-    },
-    email: "arun@fluidlabs.co.uk",
-    phone: "7621089799",
-    services: "Domain" + " , "+ "Hosting",
-    status: 0,
-    action: null,
-  }
-];
-
+// Columns definition
 const COLUMNS = [
   {
     Header: "Id",
     accessor: "id",
-    Cell: (row) => {
-      return <span>{row?.cell?.value}</span>;
-    },
+    Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
     Header: "Company",
     accessor: "company",
-    Cell: (row) => {
-      return <span>{row?.cell?.value}</span>;
-    },
+    Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
-    Header: "customer",
-    accessor: "customer",
-    Cell: (row) => {
-      return (
-        <div>
-          <span className="inline-flex items-center">
-            <span className="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none bg-slate-600">
-              <img
-                src={row?.cell?.value.image}
-                alt=""
-                className="object-cover w-full h-full rounded-full"
-              />
-            </span>
-            <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
-              {row?.cell?.value.name}
-            </span>
-          </span>
-        </div>
-      );
-    },
+    Header: "Customer Name",
+    accessor: "customer_name",
+    Cell: (row) => (
+      <div className="inline-flex items-center">
+        <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
+          {row?.cell?.value}
+        </span>
+      </div>
+    ),
   },
   {
     Header: "Primary Email",
     accessor: "email",
-    Cell: (row) => {
-      return <span>{row?.cell?.value}</span>;
-    },
+    Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
     Header: "Phone",
     accessor: "phone",
-    Cell: (row) => {
-      return <span>{row?.cell?.value}</span>;
-    },
+    Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
     Header: "Services",
-    accessor: "services",
-    Cell: (row) => {
-      return <span>{row?.cell?.value}</span>;
-    },
+    accessor: "subscription_package", // Mapping service package
+    Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
-    Header: "status",
+    Header: "Status",
     accessor: "status",
-    Cell: (row) => {
-      return (
-        <Switch
-        value={row?.cell?.value} 
-        onChange={() => setChecked(!checked)}
-      />
-      );
-    },
+    Cell: (row) => <Switch value={row?.cell?.value} />,
   },
   {
-    Header: "action",
+    Header: "Action",
     accessor: "action",
-    Cell: (row) => {
-      return (
-        <div className="flex space-x-3 rtl:space-x-reverse">
-          <Tooltip content="View" placement="top" arrow animation="shift-away">
-            <button className="action-btn" type="button">
-              <Icon icon="heroicons:eye" />
-            </button>
-          </Tooltip>
-          <Tooltip content="Edit" placement="top" arrow animation="shift-away">
-            <button className="action-btn" type="button">
-              <Icon icon="heroicons:pencil-square" />
-            </button>
-          </Tooltip>
-          <Tooltip
-            content="Delete"
-            placement="top"
-            arrow
-            animation="shift-away"
-            theme="danger"
-          >
-            <button className="action-btn" type="button">
-              <Icon icon="heroicons:trash" />
-            </button>
-          </Tooltip>
-        </div>
-      );
-    },
+    Cell: () => (
+      <div className="flex space-x-3 rtl:space-x-reverse">
+        <Tooltip content="View" placement="top" arrow animation="shift-away">
+          <button className="action-btn" type="button">
+            <Icon icon="heroicons:eye" />
+          </button>
+        </Tooltip>
+        <Tooltip content="Edit" placement="top" arrow animation="shift-away">
+          <button className="action-btn" type="button">
+            <Icon icon="heroicons:pencil-square" />
+          </button>
+        </Tooltip>
+        <Tooltip
+          content="Delete"
+          placement="top"
+          arrow
+          animation="shift-away"
+          theme="danger"
+        >
+          <button className="action-btn" type="button">
+            <Icon icon="heroicons:trash" />
+          </button>
+        </Tooltip>
+      </div>
+    ),
   },
 ];
 
-
-const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, ...rest }, ref) => {
-    const defaultRef = React.useRef();
-    const resolvedRef = ref || defaultRef;
-
-    React.useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate;
-    }, [resolvedRef, indeterminate]);
-
-    return (
-      <>
-        <input
-          type="checkbox"
-          ref={resolvedRef}
-          {...rest}
-          className="table-checkbox"
-        />
-      </>
-    );
-  }
-);
-
+// Component to list customers
 const Customerlist = ({ title = "Customer List" }) => {
-  const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => advancedTable, []);
-  const [checked, setChecked] = useState(true);
+  const [customers, setCustomers] = useState([]); // State to store customer data
   const navigate = useNavigate();
+  const columns = useMemo(() => COLUMNS, []);
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        // Retrieve the auth token (assuming it's stored in localStorage)
+        const token = localStorage.getItem('auth_token');
+
+        // Set up the authorization header with Bearer token
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        // Make the API call with the token in the Authorization header
+        const response = await axios.get(
+          "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/customers",
+          config
+        );
+        
+        const fetchedData = response.data.data.data;
+
+        // Mapping API data to table structure
+        const mappedData = fetchedData.map((item) => ({
+          id: item.id,
+          company: item.company,
+          customer_name: item.customer_name,
+          email: item.email,
+          phone: item.phone,
+          subscription_package: item.subscription_package,
+          status: item.status,
+        }));
+
+        setCustomers(mappedData); // Setting mapped data to the state
+      } catch (error) {
+        console.error("Error fetching customer data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const tableInstance = useTable(
     {
       columns,
-      data,
+      data: customers, // Use fetched customer data
     },
-
     useGlobalFilter,
     useSortBy,
     usePagination,
-    useRowSelect,
-
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        {
-          id: "selection",
-          Header: ({ getToggleAllRowsSelectedProps }) => (
-            <div>
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-            </div>
-          ),
-          Cell: ({ row }) => (
-            <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-            </div>
-          ),
-        },
-        ...columns,
-      ]);
-    }
+    useRowSelect
   );
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    footerGroups,
     page,
     nextPage,
     previousPage,
@@ -268,8 +168,8 @@ const Customerlist = ({ title = "Customer List" }) => {
     prepareRow,
   } = tableInstance;
 
-
   const { globalFilter, pageIndex, pageSize } = state;
+
   return (
     <>
       <Card>
@@ -282,7 +182,7 @@ const Customerlist = ({ title = "Customer List" }) => {
               text="Add Customers"
               className="bg-slate-800 dark:hover:bg-opacity-70 h-min text-sm font-medium text-slate-50 hover:ring-2 hover:ring-opacity-80 ring-slate-900 hover:ring-offset-1 btn-sm dark:hover:ring-0 dark:hover:ring-offset-0 ml-5"
               iconclassName=" text-lg"
-              onClick={() => navigate('/add-customers')}
+              onClick={() => navigate("/add-customers")}
             />
           </div>
         </div>
@@ -291,7 +191,7 @@ const Customerlist = ({ title = "Customer List" }) => {
             <div className="overflow-hidden ">
               <table
                 className="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700"
-                {...getTableProps}
+                {...getTableProps()}
               >
                 <thead className="bg-slate-200 dark:bg-slate-700">
                   {headerGroups.map((headerGroup) => (
@@ -319,19 +219,17 @@ const Customerlist = ({ title = "Customer List" }) => {
                 </thead>
                 <tbody
                   className="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700"
-                  {...getTableBodyProps}
+                  {...getTableBodyProps()}
                 >
                   {page.map((row) => {
                     prepareRow(row);
                     return (
                       <tr {...row.getRowProps()}>
-                        {row.cells.map((cell) => {
-                          return (
-                            <td {...cell.getCellProps()} className="table-td">
-                              {cell.render("Cell")}
-                            </td>
-                          );
-                        })}
+                        {row.cells.map((cell) => (
+                          <td {...cell.getCellProps()} className="table-td">
+                            {cell.render("Cell")}
+                          </td>
+                        ))}
                       </tr>
                     );
                   })}
@@ -340,85 +238,61 @@ const Customerlist = ({ title = "Customer List" }) => {
             </div>
           </div>
         </div>
-        <div className="md:flex md:space-y-0 space-y-5 justify-between mt-6 items-center">
-          <div className=" flex items-center space-x-3 rtl:space-x-reverse">
+        {/* Pagination */}
+        <div className="md:flex justify-between mt-6 items-center">
+          <div className=" flex items-center space-x-3">
             <select
               className="form-control py-2 w-max"
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
             >
-              {[10, 25, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
+              {[10, 25, 50].map((size) => (
+                <option key={size} value={size}>
+                  Show {size}
                 </option>
               ))}
             </select>
             <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-              Page{" "}
-              <span>
-                {pageIndex + 1} of {pageOptions.length}
-              </span>
+              Page {pageIndex + 1} of {pageOptions.length}
             </span>
           </div>
-          <ul className="flex items-center  space-x-3  rtl:space-x-reverse">
-            <li className="text-xl leading-4 text-slate-900 dark:text-white rtl:rotate-180">
-              <button
-                className={` ${!canPreviousPage ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                onClick={() => gotoPage(0)}
-                disabled={!canPreviousPage}
-              >
-                <Icon icon="heroicons:chevron-double-left-solid" />
+          <ul className="flex items-center space-x-3">
+            <li>
+              <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+                {"<<"}
               </button>
             </li>
-            <li className="text-sm leading-4 text-slate-900 dark:text-white rtl:rotate-180">
-              <button
-                className={` ${!canPreviousPage ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                onClick={() => previousPage()}
-                disabled={!canPreviousPage}
-              >
-                Prev
+            <li>
+              <button onClick={previousPage} disabled={!canPreviousPage}>
+                {"<"}
               </button>
             </li>
-            {pageOptions.map((page, pageIdx) => (
-              <li key={pageIdx}>
+            {pageOptions.map((_, idx) => (
+              <li key={idx}>
                 <button
-                  href="#"
-                  aria-current="page"
-                  className={` ${pageIdx === pageIndex
-                    ? "bg-slate-900 dark:bg-slate-600  dark:text-slate-200 text-white font-medium "
-                    : "bg-slate-100 dark:bg-slate-700 dark:text-slate-400 text-slate-900  font-normal  "
-                    }    text-sm rounded leading-[16px] flex h-6 w-6 items-center justify-center transition-all duration-150`}
-                  onClick={() => gotoPage(pageIdx)}
+                  onClick={() => gotoPage(idx)}
+                  className={
+                    pageIndex === idx
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-100"
+                  }
                 >
-                  {page + 1}
+                  {idx + 1}
                 </button>
               </li>
             ))}
-            <li className="text-sm leading-4 text-slate-900 dark:text-white rtl:rotate-180">
-              <button
-                className={` ${!canNextPage ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                onClick={() => nextPage()}
-                disabled={!canNextPage}
-              >
-                Next
+            <li>
+              <button onClick={nextPage} disabled={!canNextPage}>
+                {">"}
               </button>
             </li>
-            <li className="text-xl leading-4 text-slate-900 dark:text-white rtl:rotate-180">
-              <button
-                onClick={() => gotoPage(pageCount - 1)}
-                disabled={!canNextPage}
-                className={` ${!canNextPage ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-              >
-                <Icon icon="heroicons:chevron-double-right-solid" />
+            <li>
+              <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+                {">>"}
               </button>
             </li>
           </ul>
         </div>
-        {/*end*/}
       </Card>
     </>
   );
