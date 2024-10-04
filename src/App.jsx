@@ -17,8 +17,6 @@ const Roles = lazy(() => import("./pages/projects/projects"));
 
 
 const Login = lazy(() => import("./pages/auth/login3"));
-const Login2 = lazy(() => import("./pages/auth/login2"));
-const Login3 = lazy(() => import("./pages/auth/login3"));
 const Register = lazy(() => import("./pages/auth/register"));
 const Register2 = lazy(() => import("./pages/auth/register2"));
 const Register3 = lazy(() => import("./pages/auth/register3"));
@@ -127,22 +125,7 @@ function App() {
             </Suspense>
           }
         />
-        <Route
-          path="/login2"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Login2 />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/login3"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Login3 />
-            </Suspense>
-          }
-        />
+        
         <Route
           path="/register"
           element={
