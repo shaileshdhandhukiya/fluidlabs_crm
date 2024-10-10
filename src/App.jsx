@@ -16,6 +16,7 @@ const AddUsers = lazy(() => import("./pages/users/adduser"));
 const EditUsers = lazy(() => import("./pages/users/edit-user"));
 const Profile = lazy(() => import("./pages/users/view-user"));
 const Subscriptions = lazy(() => import("./pages/subscriptions/subscriptions"));
+const ViewSubscriptions = lazy(() => import("./pages/subscriptions/view-subscriptions"));
 const Roles = lazy(() => import("./pages/projects/projects"));
 
 
@@ -201,6 +202,8 @@ function App() {
 
           
           <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="edit-subscriptions/:id" element={<ViewSubscriptions />} />
+          
           <Route path="roles" element={<Roles />} />
 
           
