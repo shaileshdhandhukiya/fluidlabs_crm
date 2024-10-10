@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios"; // Import Axios for API calls
+import axios from "axios";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
@@ -16,8 +16,35 @@ import {
 } from "react-table";
 import GlobalFilter from "../table/react-tables/GlobalFilter";
 
-// Columns definition
-const COLUMNS = [
+const handleDeleteCustomer = async (id, setCustomers) => {
+  const token = localStorage.getItem("auth_token");
+
+  if (window.confirm("Are you sure you want to delete this customer?")) {
+    try {
+      const response = await axios.delete(
+        `https://phplaravel-1340915-4916922.cloudwaysapps.com/api/customers/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200 || response.status === 204) {
+        setCustomers((prevCustomers) =>
+          prevCustomers.filter((customer) => customer.id !== id)
+        );
+        alert("Customer deleted successfully!");
+      } else {
+        alert("Failed to delete customer. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting customer:", error.response || error.message);
+    }
+  }
+};
+
+const COLUMNS = (navigate) => [
   {
     Header: "Id",
     accessor: "id",
@@ -51,7 +78,7 @@ const COLUMNS = [
   },
   {
     Header: "Services",
-    accessor: "subscription_package", // Mapping service package
+    accessor: "subscription_package",
     Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
@@ -62,15 +89,23 @@ const COLUMNS = [
   {
     Header: "Action",
     accessor: "action",
-    Cell: () => (
+    Cell: ({ row }) => (
       <div className="flex space-x-3 rtl:space-x-reverse">
         <Tooltip content="View" placement="top" arrow animation="shift-away">
-          <button className="action-btn" type="button">
+          <button
+            className="action-btn"
+            type="button"
+            onClick={() => navigate(`/customer-profile/${row.original.id}`)} // Navigate to View Customer
+          >
             <Icon icon="heroicons:eye" />
           </button>
         </Tooltip>
         <Tooltip content="Edit" placement="top" arrow animation="shift-away">
-          <button className="action-btn" type="button">
+          <button
+            className="action-btn"
+            type="button"
+            onClick={() => navigate(`/edit-profile/${row.original.id}`)} // Navigate to Edit Customer
+          >
             <Icon icon="heroicons:pencil-square" />
           </button>
         </Tooltip>
@@ -81,7 +116,11 @@ const COLUMNS = [
           animation="shift-away"
           theme="danger"
         >
-          <button className="action-btn" type="button">
+          <button
+            className="action-btn"
+            type="button"
+            onClick={() => handleDeleteCustomer(row.original.id, setCustomers)} // Call delete function
+          >
             <Icon icon="heroicons:trash" />
           </button>
         </Tooltip>
@@ -90,36 +129,27 @@ const COLUMNS = [
   },
 ];
 
-// Component to list customers
 const Customerlist = ({ title = "Customer List" }) => {
-  const [customers, setCustomers] = useState([]); // State to store customer data
-  const navigate = useNavigate();
-  const columns = useMemo(() => COLUMNS, []);
+  const [customers, setCustomers] = useState([]); 
+  const navigate = useNavigate(); // useNavigate hook for redirection
 
-  // Fetch data from API
+  // Memoize the columns definition to pass the navigate function
+  const columns = useMemo(() => COLUMNS(navigate), [navigate]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        // Retrieve the auth token (assuming it's stored in localStorage)
-        const token = localStorage.getItem('auth_token');
-
-        // Set up the authorization header with Bearer token
+        const token = localStorage.getItem("auth_token");
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         };
-
-        // Make the API call with the token in the Authorization header
         const response = await axios.get(
           "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/customers",
           config
         );
-        
         const fetchedData = response.data.data.data;
-
-        // Mapping API data to table structure
         const mappedData = fetchedData.map((item) => ({
           id: item.id,
           company: item.company,
@@ -129,21 +159,16 @@ const Customerlist = ({ title = "Customer List" }) => {
           subscription_package: item.subscription_package,
           status: item.status,
         }));
-
-        setCustomers(mappedData); // Setting mapped data to the state
+        setCustomers(mappedData);
       } catch (error) {
         console.error("Error fetching customer data", error);
       }
     };
-
     fetchData();
   }, []);
 
   const tableInstance = useTable(
-    {
-      columns,
-      data: customers, // Use fetched customer data
-    },
+    { columns, data: customers },
     useGlobalFilter,
     useSortBy,
     usePagination,
@@ -238,7 +263,6 @@ const Customerlist = ({ title = "Customer List" }) => {
             </div>
           </div>
         </div>
-        {/* Pagination */}
         <div className="md:flex justify-between mt-6 items-center">
           <div className=" flex items-center space-x-3">
             <select
@@ -287,7 +311,10 @@ const Customerlist = ({ title = "Customer List" }) => {
               </button>
             </li>
             <li>
-              <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+              <button
+                onClick={() => gotoPage(pageCount - 1)}
+                disabled={!canNextPage}
+              >
                 {">>"}
               </button>
             </li>

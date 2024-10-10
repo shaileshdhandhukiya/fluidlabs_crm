@@ -39,7 +39,7 @@ const Modal = ({
           <button
             type="button"
             onClick={openModal}
-            className={`btn ${labelClass}`}
+            className={`bg-slate-800 dark:hover:bg-opacity-70 h-min text-sm font-medium text-slate-50 hover:ring-2 hover:ring-opacity-80 ring-slate-900 hover:ring-offset-1 btn-sm dark:hover:ring-0 dark:hover:ring-offset-0 ml-5 btn`} 
           >
             {label}
           </button>

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";  // Import useNavigate hook
 import Card from "@/components/ui/Card";
 import Textinput from "@/components/ui/Textinput";
 import Button from "@/components/ui/Button";
-import Fileinput from "@/components/ui/Fileinput";
-import Select, { components } from "react-select";
+import Select from "react-select";
 import Textarea from "@/components/ui/Textarea";
 import InputGroup from "@/components/ui/InputGroup";
 import Icon from "@/components/ui/Icon";
+import axios from "axios";
 
 const styles = {
     multiValue: (base, state) => {
@@ -20,25 +21,29 @@ const styles = {
     multiValueRemove: (base, state) => {
         return state.data.isFixed ? { ...base, display: "none" } : base;
     },
-    option: (provided, state) => ({
+    option: (provided) => ({
         ...provided,
         fontSize: "14px",
     }),
 };
 
-const AddProject = () => {
+const AddCustomer = () => {
     const [formData, setFormData] = useState({
-        companyName: "",
-        fullName: "",
+        company: "",
+        customer_name: "",
         phone: "",
         email: "",
         currency: "",
-        description: "",
+        office_address: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
         country: "",
+        subscription_package: "",
+        billing_type: "",
     });
+
+    const navigate = useNavigate();  // Initialize useNavigate hook
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -55,22 +60,46 @@ const AddProject = () => {
         });
     };
 
+    const handleSubscriptionChange = (selectedOption) => {
+        setFormData({
+            ...formData,
+            subscription_package: selectedOption.value,
+        });
+    };
+
+    const handleBillingChange = (selectedOption) => {
+        setFormData({
+            ...formData,
+            billing_type: selectedOption.value,
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const response = await fetch("https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
+        // Get the authentication token from localStorage
+        const token = localStorage.getItem("auth_token");
 
-            if (response.ok) {
-                const data = await response.json();
+        if (!token) {
+            alert("No authentication token found. Please log in.");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/customers",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,  // Add the token to the Authorization header
+                    },
+                }
+            );
+
+            if (response.status === 200 || response.status === 201) {
                 alert("Customer added successfully!");
-                // Reset form fields or perform any necessary actions
+                navigate("/customers");  // Redirect to All Customers page
             } else {
                 alert("Failed to add customer");
             }
@@ -88,20 +117,20 @@ const AddProject = () => {
                         <div>
                             <Textinput
                                 label="Company name"
-                                id="companyName"
+                                id="company"
                                 type="text"
                                 placeholder="Company name"
-                                value={formData.companyName}
+                                value={formData.company}
                                 onChange={handleInputChange}
                             />
                         </div>
                         <div>
                             <Textinput
                                 label="Full name"
-                                id="fullName"
+                                id="customer_name"
                                 type="text"
                                 placeholder="Full name"
-                                value={formData.fullName}
+                                value={formData.customer_name}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -146,14 +175,48 @@ const AddProject = () => {
                                 onChange={handleCurrencyChange}
                             />
                         </div>
+                        <div>
+                            <label htmlFor="subscription_package" className="form-label">
+                                Subscription Package
+                            </label>
+                            <Select
+                                options={[
+                                    { label: "Name Of Package", value: "Premium" },
+                                    { label: "Name Of Package", value: "Premium" },
+                                    { label: "Name Of Package", value: "Premium" },
+                                ]}
+                                styles={styles}
+                                className="react-select"
+                                classNamePrefix="select"
+                                id="subscription_package"
+                                onChange={handleSubscriptionChange}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="billing_type" className="form-label">
+                                Billing Type
+                            </label>
+                            <Select
+                                options={[
+                                    { label: "Monthly", value: "monthly" },
+                                    { label: "Quarterly", value: "quarterly" },
+                                    { label: "Yearly", value: "yearly" },
+                                ]}
+                                styles={styles}
+                                className="react-select"
+                                classNamePrefix="select"
+                                id="billing_type"
+                                onChange={handleBillingChange}
+                            />
+                        </div>
                     </div>
                     <div className="lg:grid-cols-1 grid gap-5 grid-cols-1 mt-2.5 ">
                         <div className="fromGroup mb-5">
                             <Textarea
-                                label="Description"
+                                label="Address"
                                 placeholder="Address"
-                                id="description"
-                                value={formData.description}
+                                id="office_address"
+                                value={formData.office_address}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -182,10 +245,10 @@ const AddProject = () => {
                         <div>
                             <Textinput
                                 label="Zip Code"
-                                id="zipCode"
+                                id="zip_code"
                                 type="text"
                                 placeholder="Zip Code"
-                                value={formData.zipCode}
+                                value={formData.zip_code}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -213,4 +276,4 @@ const AddProject = () => {
     );
 };
 
-export default AddProject;
+export default AddCustomer;

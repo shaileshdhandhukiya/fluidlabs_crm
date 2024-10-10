@@ -7,10 +7,15 @@ const Dashboard = lazy(() => import("./pages/dashboard/project"));
 const AddProject = lazy(() => import("./pages/projects/AddProject"));
 const Customers = lazy(() => import("./pages/customers/customers"));
 const AddCustomers = lazy(() => import("./pages/customers/addcustomer"));
+const ViewCustomers = lazy(() => import("./pages/customers/view-customers"));
+const EditCustomers = lazy(() => import("./pages/customers/view-customers"));
 const Projects = lazy(() => import("./pages/projects/projects"));
 const Tasks = lazy(() => import("./pages/projects/projects"));
-const Users = lazy(() => import("./pages/projects/projects"));
-const Subscriptions = lazy(() => import("./pages/projects/projects"));
+const Users = lazy(() => import("./pages/users/user"));
+const AddUsers = lazy(() => import("./pages/users/adduser"));
+const EditUsers = lazy(() => import("./pages/users/edit-user"));
+const Profile = lazy(() => import("./pages/users/view-user"));
+const Subscriptions = lazy(() => import("./pages/subscriptions/subscriptions"));
 const Roles = lazy(() => import("./pages/projects/projects"));
 
 
@@ -91,7 +96,6 @@ const BlogPage = lazy(() => import("./pages/utility/blog"));
 const BlogDetailsPage = lazy(() => import("./pages/utility/blog/blog-details"));
 const FaqPage = lazy(() => import("./pages/utility/faq"));
 const Settings = lazy(() => import("./pages/utility/settings"));
-const Profile = lazy(() => import("./pages/utility/profile"));
 const IconPage = lazy(() => import("./pages/icons"));
 const NotificationPage = lazy(() => import("./pages/utility/notifications"));
 const ChangelogPage = lazy(() => import("./pages/changelog"));
@@ -187,8 +191,15 @@ function App() {
           <Route path="projects" element={<Projects />} />
           <Route path="customers" element={<Customers />} />
           <Route path="add-customers" element={<AddCustomers />} />
+          <Route path="customer-profile/:id" element={<ViewCustomers />} />
+          <Route path="edit-profile/:id" element={<EditCustomers />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="users" element={<Users />} />
+          <Route path="add-users" element={<AddUsers />} />
+          <Route path="edit-user/:id" element={<EditUsers />} />
+          <Route path="profile/:id" element={<Profile />} />
+
+          
           <Route path="subscriptions" element={<Subscriptions />} />
           <Route path="roles" element={<Roles />} />
 
@@ -249,7 +260,6 @@ function App() {
           <Route path="blog-details" element={<BlogDetailsPage />} />
           <Route path="faq" element={<FaqPage />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="profile" element={<Profile />} />
           <Route path="basic" element={<BasicWidget />} />
           <Route path="statistic" element={<StatisticWidget />} />
           <Route path="icons" element={<IconPage />} />

@@ -1,8 +1,8 @@
 import React from "react";
 // import Card from "../components/ui/Card";
-import Customerlist from "./customerlist";
+import Customerlist from "./userlist";
 
-const Projects = () => {
+const Users = () => {
   return (
     <div>
      <Customerlist />
@@ -10,4 +10,4 @@ const Projects = () => {
   );
 };
 
-export default Projects;
+export default Users;

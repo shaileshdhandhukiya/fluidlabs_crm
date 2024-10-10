@@ -27,7 +27,7 @@ export const menuItems = [
   },
   {
     title: "Customers",
-    icon: "heroicons-outline:document",
+    icon: "heroicons-outline:users",
     link: "#",
     isHide: true,
     child: [
@@ -44,31 +44,35 @@ export const menuItems = [
   {
     title: "Tasks",
     isHide: true,
-    icon: "heroicons-outline:mail",
+    icon: "heroicons-outline:chart-pie",
     link: "tasks",
-  },
-  // {
-  //   title: "Kanban",
-  //   isHide: true,
-  //   icon: "heroicons-outline:view-boards",
-  //   link: "kanban",
-  // },  
+  }, 
   {
-    title: "Users Management",
+    title: "Staff",
+    icon: "heroicons-outline:academic-cap",
+    link: "#",
     isHide: true,
-    icon: "heroicons-outline:calendar",
-    link: "users",
+    child: [
+      {
+        childtitle: "Staff",
+        childlink: "users",
+      },
+      {
+        childtitle: "Add Staff",
+        childlink: "add-users",
+      },
+    ],
   },
   {
     title: "Subscriptions",
     isHide: true,
-    icon: "heroicons-outline:clipboard-check",
+    icon: "heroicons-outline:cash",
     link: "subscriptions",
   },
   {
     title: "Roles",
     isHide: true,
-    icon: "heroicons-outline:clipboard-check",
+    icon: "heroicons-outline:shield-check",
     link: "roles",
   },
   {

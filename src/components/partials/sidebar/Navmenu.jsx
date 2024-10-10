@@ -38,7 +38,7 @@ const Navmenu = ({ menus }) => {
         }
       }
     });
-    document.title = `Dashcode  | ${locationName}`;
+    document.title = `Fluidlabs  | ${locationName}`;
 
     setActiveSubmenu(submenuIndex);
     dispatch(toggleActiveChat(false));
