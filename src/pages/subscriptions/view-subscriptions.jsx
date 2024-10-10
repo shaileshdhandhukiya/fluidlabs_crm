@@ -181,6 +181,7 @@ const Profile = () => {
               className="react-select"
               classNamePrefix="select"
               id="billing_duration"
+              value={{ label: formData.billing_duration, value: formData.billing_duration }} 
               onChange={handleBillingChange}
             />
           </div>
@@ -195,6 +196,7 @@ const Profile = () => {
               className="react-select"
               classNamePrefix="select"
               id="status"
+              value={{ label: formData.status, value: formData.status }}
               onChange={handleStatusChange}
             />
           </div>
@@ -220,6 +222,7 @@ const Profile = () => {
               className="react-select"
               classNamePrefix="select"
               id="currency"
+              value={{ label: formData.currency, value: formData.currency }}
               onChange={handleCurrencyChange}
             />
           </div>

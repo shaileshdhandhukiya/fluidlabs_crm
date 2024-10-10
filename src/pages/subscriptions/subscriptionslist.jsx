@@ -86,7 +86,7 @@ const COLUMNS = (navigate, subscriptions) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => navigate(`/profile/${row.original.id}`)}
+            onClick={() => navigate(`/edit-subscriptions/${row.original.id}`)}
           >
             <Icon icon="heroicons:eye" />
           </button>
@@ -95,7 +95,7 @@ const COLUMNS = (navigate, subscriptions) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => navigate(`/edit-user/${row.original.id}`)}
+            onClick={() => navigate(`/edit-subscriptions/${row.original.id}`)}
           >
             <Icon icon="heroicons:pencil-square" />
           </button>
