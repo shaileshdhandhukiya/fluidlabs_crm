@@ -20,20 +20,20 @@ const statistics = [
     icon: "heroicons-outline:chart-pie",
   },
   {
-    title: "Hours",
+    title: "Customers",
     count: "190",
     bg: "bg-primary-500",
     text: "text-primary-500",
     percent: "1.67%  ",
-    icon: "heroicons-outline:clock",
+    icon: "heroicons-outline:user-group",
   },
   {
-    title: "Spendings",
-    count: "$3,564",
+    title: "Employee",
+    count: "20",
     bg: "bg-success-500",
     text: "text-success-500",
     percent: "11.67%  ",
-    icon: "heroicons-outline:calculator",
+    icon: "heroicons-outline:user-circle",
   },
 ];
 const GroupChart4 = () => {

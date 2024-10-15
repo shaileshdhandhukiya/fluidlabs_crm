@@ -149,7 +149,7 @@ const Customerlist = ({ title = "Customer List" }) => {
           "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/customers",
           config
         );
-        const fetchedData = response.data.data.data;
+        const fetchedData = response.data.data;
         const mappedData = fetchedData.map((item) => ({
           id: item.id,
           company: item.company,

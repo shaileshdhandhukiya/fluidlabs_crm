@@ -5,8 +5,6 @@ import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
 import Button from "@/components/ui/Button";
 import { useNavigate } from "react-router-dom";
-import Switch from "@/components/ui/Switch";
-
 import {
   useTable,
   useRowSelect,
@@ -17,74 +15,40 @@ import {
 import GlobalFilter from "../table/react-tables/GlobalFilter";
 
 // Delete user function
-const deleteUser = async (id, setUsers) => {
+const deleteUser = async (id, setRoles) => {
   const token = localStorage.getItem("auth_token");
-  if (window.confirm("Are you sure you want to delete this customer?")) {
+  if (window.confirm("Are you sure you want to delete this role?")) {
     try {
       const response = await axios.delete(
-        `https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users/${id}`,
+        `https://phplaravel-1340915-4916922.cloudwaysapps.com/api/roles/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (response.status === 200 || response.status === 204) {
-        // Remove user from the list locally
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-        alert("User deleted successfully!");
+        setRoles((prevRoles) => prevRoles.filter((role) => role.id !== id));
+        alert("Role deleted successfully!");
       } else {
-        alert("Failed to delete user. Please try again.");
+        alert("Failed to delete role. Please try again.");
       }
     } catch (error) {
-      console.error("Error deleting user:", error.response || error.message);
-      alert("An error occurred while deleting the user.");
+      console.error("Error deleting role:", error.response || error.message);
+      alert("An error occurred while deleting the role.");
     }
   }
 };
 
-const COLUMNS = (navigate, setUsers) => [
+const COLUMNS = (navigate, setRoles) => [
   {
     Header: "Id",
     accessor: "id",
     Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
-    Header: "Name",
-    accessor: "full_name",
-    Cell: (row) => (
-      <div className="inline-flex items-center">
-        <span className="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none bg-slate-600">
-          <img
-            src={row?.cell?.value.profile_photo || 'default-profile.jpg'}
-            alt="Profile"
-            className="object-cover w-full h-full rounded-full"
-          />
-        </span>
-        <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
-          {row?.cell?.value}
-        </span>
-      </div>
-    ),
-  },
-  {
-    Header: "Email Address",
-    accessor: "email",
+    Header: "Role",
+    accessor: "role",
     Cell: (row) => <span>{row?.cell?.value}</span>,
-  },
-  {
-    Header: "Phone",
-    accessor: "phone",
-    Cell: (row) => <span>{row?.cell?.value}</span>,
-  },
-  {
-    Header: "Designation",
-    accessor: "designation",
-    Cell: (row) => <span>{row?.cell?.value}</span>,
-  },
-  {
-    Header: "Status",
-    accessor: "status",
-    Cell: (row) => <Switch value={row?.cell?.value} />,
   },
   {
     Header: "Action",
@@ -104,7 +68,7 @@ const COLUMNS = (navigate, setUsers) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => navigate(`/edit-user/${row.original.id}`)}
+            onClick={() => navigate(`/edit-role/${row.original.id}`)}
           >
             <Icon icon="heroicons:pencil-square" />
           </button>
@@ -119,7 +83,7 @@ const COLUMNS = (navigate, setUsers) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => deleteUser(row.original.id, setUsers)}
+            onClick={() => deleteUser(row.original.id, setRoles)}
           >
             <Icon icon="heroicons:trash" />
           </button>
@@ -129,43 +93,50 @@ const COLUMNS = (navigate, setUsers) => [
   },
 ];
 
-const Customerlist = ({ title = "Employee List" }) => {
-  const [customers, setUsers] = useState([]);
+const Rolelist = ({ title = "Role List" }) => {
+  const [roles, setRoles] = useState([]);
   const navigate = useNavigate();
 
-  // Memoize the columns definition to pass navigate and setUsers functions
-  const columns = useMemo(() => COLUMNS(navigate, setUsers), [navigate]);
+  // Memoize the columns definition
+  const columns = useMemo(() => COLUMNS(navigate, setRoles), [navigate]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchRoles = async () => {
       try {
         const token = localStorage.getItem("auth_token");
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
         const response = await axios.get(
-          "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users",
+          "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/roles",
           config
         );
-        const fetchedData = response.data.data;
+
+        // Debug: Check the API response
+        console.log("API Response:", response.data);
+
+        // Safely access the data
+        const fetchedData = response.data?.data?.roles?.data || [];
+        // Default to an empty array if not found
+
         const mappedData = fetchedData.map((item) => ({
           id: item.id,
-          full_name: item.first_name + ' ' + item.last_name,
-          email: item.email,
-          phone: item.phone,
-          designation: item.designation,
-          status: item.status,
+          role: item.name, // Ensure this field matches the API response structure
         }));
-        setUsers(mappedData);
+
+        // Debug: Check the mapped data
+        console.log("Mapped Data:", mappedData);
+
+        setRoles(mappedData);
       } catch (error) {
-        console.error("Error fetching customer data", error);
+        console.error("Error fetching roles data", error);
       }
     };
-    fetchData();
+    fetchRoles();
   }, []);
 
   const tableInstance = useTable(
-    { columns, data: customers },
+    { columns, data: roles },
     useGlobalFilter,
     useSortBy,
     usePagination,
@@ -200,10 +171,10 @@ const Customerlist = ({ title = "Employee List" }) => {
           <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
           <Button
             icon="heroicons-outline:plus"
-            text="Add Employee"
+            text="Add Role"
             className="bg-slate-800 dark:hover:bg-opacity-70 h-min text-sm font-medium text-slate-50 hover:ring-2 hover:ring-opacity-80 ring-slate-900 hover:ring-offset-1 btn-sm dark:hover:ring-0 dark:hover:ring-offset-0 ml-5"
             iconclassName="text-lg"
-            onClick={() => navigate("/add-users")}
+            onClick={() => navigate("/add-role")}
           />
         </div>
       </div>
@@ -311,4 +282,4 @@ const Customerlist = ({ title = "Employee List" }) => {
   );
 };
 
-export default Customerlist;
+export default Rolelist;

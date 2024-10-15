@@ -10,6 +10,7 @@ const AddCustomers = lazy(() => import("./pages/customers/addcustomer"));
 const ViewCustomers = lazy(() => import("./pages/customers/view-customers"));
 const EditCustomers = lazy(() => import("./pages/customers/view-customers"));
 const Projects = lazy(() => import("./pages/projects/projects"));
+const EditProjects = lazy(() => import("./pages/projects/Edit-Projects"));
 const Tasks = lazy(() => import("./pages/projects/projects"));
 const Users = lazy(() => import("./pages/users/user"));
 const AddUsers = lazy(() => import("./pages/users/adduser"));
@@ -17,7 +18,8 @@ const EditUsers = lazy(() => import("./pages/users/edit-user"));
 const Profile = lazy(() => import("./pages/users/view-user"));
 const Subscriptions = lazy(() => import("./pages/subscriptions/subscriptions"));
 const ViewSubscriptions = lazy(() => import("./pages/subscriptions/view-subscriptions"));
-const Roles = lazy(() => import("./pages/projects/projects"));
+const Roles = lazy(() => import("./pages/role/role"));
+const AddRoles = lazy(() => import("./pages/role/addrole"));
 
 
 
@@ -190,6 +192,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-project" element={<AddProject />} />
           <Route path="projects" element={<Projects />} />
+          <Route path="edit-project/:id" element={<EditProjects />} />
           <Route path="customers" element={<Customers />} />
           <Route path="add-customers" element={<AddCustomers />} />
           <Route path="customer-profile/:id" element={<ViewCustomers />} />
@@ -205,7 +208,8 @@ function App() {
           <Route path="edit-subscriptions/:id" element={<ViewSubscriptions />} />
           
           <Route path="roles" element={<Roles />} />
-
+          <Route path="add-role" element={<AddRoles />} />
+          
           
           {/* App pages */}
           <Route path="todo" element={<TodoPage />} />

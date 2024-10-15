@@ -65,7 +65,7 @@ const Profile = () => {
           });
         }
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching Subscriptions data:", error);
       }
     };
 
@@ -117,13 +117,13 @@ const Profile = () => {
       );
 
       if (response.data.success) {
-        alert("Profile updated successfully!"); // Or navigate to another page
-        navigate('/customers'); // Redirect to customer list
+        alert("Subscriptions updated successfully!"); // Or navigate to another page
+        navigate('/subscriptions'); // Redirect to customer list
       } else {
-        console.error("Failed to update profile:", response.data.message);
+        console.error("Failed to update Subscriptions:", response.data.message);
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Error updating Subscriptions:", error);
     }
   };
   const Textinput = ({ label, id, type = "text", placeholder, value, onChange }) => {
