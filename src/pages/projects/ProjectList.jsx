@@ -139,7 +139,7 @@ const COLUMNS = (navigate, setProjects) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => navigate(`/customer-profile/${row.original.id}`)}
+            onClick={() => navigate(`/view-project/${row.original.id}`)}
           >
             <Icon icon="heroicons:eye" />
           </button>
