@@ -6,11 +6,12 @@ import Button from "@/components/ui/Button";
 import Select from "react-select";
 import InputGroup from "@/components/ui/InputGroup";
 import Icon from "@/components/ui/Icon";
-import axios from "axios";
 import Flatpickr from "react-flatpickr";
 import { format } from 'date-fns';
 import Fileinput from "@/components/ui/Fileinput";
-
+import axios from "axios";
+import { toast } from "react-toastify";
+import { getRequest, postRequest, putRequest } from "../../utils/apiHelper"; // Import putRequest
 
 const styles = {
     multiValue: (base, state) => (state.data.isFixed ? { ...base, opacity: "0.5" } : base),
@@ -19,9 +20,8 @@ const styles = {
     option: (provided) => ({ ...provided, fontSize: "14px" }),
 };
 
-const AddUser = () => {
+const AddUser = ({ user }) => {
     const [formData, setFormData] = useState({
-        profile_photo: "",
         first_name: "",
         last_name: "",
         phone: "",
@@ -33,6 +33,8 @@ const AddUser = () => {
         roles: "",
         password: "",
     });
+
+    const [profilePhoto, setProfilePhoto] = useState(null);
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -41,12 +43,8 @@ const AddUser = () => {
     useEffect(() => {
         const fetchRoles = async () => {
             try {
-                const response = await axios.get('https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users-create', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const rolesData = response.data.data;
+                const response = await getRequest('/api/users-create');
+                const rolesData = response.data;
                 const roleOptions = Object.keys(rolesData).map(key => ({
                     label: rolesData[key],
                     value: key,
@@ -60,7 +58,24 @@ const AddUser = () => {
         };
 
         fetchRoles();
-    }, [token]);
+
+        // If user prop is provided, set the form data for editing
+        if (user) {
+            setFormData({
+                first_name: user.first_name || "",
+                last_name: user.last_name || "",
+                phone: user.phone || "",
+                email: user.email || "",
+                date_of_birth: user.date_of_birth || "",
+                date_of_join: user.date_of_join || "",
+                type: user.type || "",
+                designation: user.designation || "",
+                roles: user.roles || "",
+                password: "", // Keep password empty for editing
+            });
+            setProfilePhoto(user.profile_photo || null); // Set the profile photo if it exists
+        }
+    }, [user, token]);
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -73,7 +88,7 @@ const AddUser = () => {
     const handleDateChange = (field, date) => {
         setFormData((prevData) => ({
             ...prevData,
-            [field]: format(date[0], 'yyyy-MM-dd'), // Set the selected date
+            [field]: format(date[0], 'yyyy-MM-dd'),
         }));
     };
 
@@ -91,53 +106,123 @@ const AddUser = () => {
         }));
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfilePhoto(file);
+            console.log("Profile photo selected:", file);
+        } else {
+            console.error("No file selected");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
+
         if (!token) {
             alert("No authentication token found. Please log in.");
             return;
         }
 
+        const formDataToSubmit = new FormData();
+
+        // Append other form data
+        formDataToSubmit.append("first_name", formData.first_name);
+        formDataToSubmit.append("last_name", formData.last_name);
+        formDataToSubmit.append("phone", formData.phone);
+        formDataToSubmit.append("email", formData.email);
+        formDataToSubmit.append("date_of_birth", formData.date_of_birth);
+        formDataToSubmit.append("date_of_join", formData.date_of_join);
+        formDataToSubmit.append("type", formData.type);
+        formDataToSubmit.append("designation", formData.designation);
+        formDataToSubmit.append("roles", formData.roles);
+        formDataToSubmit.append("password", formData.password);
+        // Password is kept empty on edit, but you may choose to allow changing it
+
+        // Append the profile photo if available and is a File object
+        if (profilePhoto instanceof File) {
+            console.log("file append");            
+            formDataToSubmit.append("profile_photo", profilePhoto);
+        } else {
+            console.error("Profile photo is not a valid File object");
+        }
+
+        // Debugging log to see the FormData content
+        for (let pair of formDataToSubmit.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+
         try {
-            const response = await axios.post(
-                "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users",
-                formData,
-                {
+            let response;
+            // Check if it's an edit or an add
+            if (user && user.id) {
+                // Edit user
+                response = await putRequest(`/api/users/${user.id}`, formDataToSubmit, {
                     headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    }
+                });
+            } else {
+                // Add user
+                response = await postRequest("/api/users", formDataToSubmit, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    }
+                });
+            }
 
             if (response.status === 200 || response.status === 201) {
-                alert("User added successfully!");
+                toast.success(user ? "User updated successfully!" : "User added successfully!", {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+
                 navigate("/users");
             } else {
-                alert("Failed to add user");
+                toast.warning("Failed to submit user data", {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
             }
+
         } catch (error) {
-            console.error("Error submitting the form:", error);
-            alert("An error occurred. Please try again.");
+            if (error.response) {
+                console.error("Server responded with an error:", error.response);
+            } else if (error.request) {
+                console.error("No response received:", error.request);
+            } else {
+                console.error("Error submitting the form:", error.message);
+            }
+            alert("An error occurred. Please check the console for details.");
         }
     };
-    const [selectedFile, setSelectedFile] = useState(null);
-    const handleFileChange = (e) => {
-        setSelectedFile(e.target.files[0]);
-    };
-    
+
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <Card title="Add New Employee">
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
+                <Card title={user ? "Edit User" : "Add New Employee"}>
                     <div className="lg:grid-cols-2 grid gap-5 grid-cols-1">
                         <div>
                             <label htmlFor="profile_photo" className="form-label">Profile Photo</label>
                             <Fileinput
                                 name="profile_photo"
                                 id="profile_photo"
-                                selectedFile={selectedFile}
+                                type="file"
+                                value={profilePhoto}
                                 onChange={handleFileChange}
                             />
                         </div>
@@ -241,22 +326,19 @@ const AddUser = () => {
                             />
                         </div>
                         <div>
-                            <Textinput
+                            <InputGroup
                                 label="Password"
                                 id="password"
                                 type="password"
-                                placeholder="ABC@123"
+                                placeholder="Type your password"
+                                prepend={<Icon icon="heroicons-outline:lock-closed" />}
                                 value={formData.password}
                                 onChange={handleInputChange}
                             />
                         </div>
                     </div>
-                    <div className="lg:col-span-2 col-span-1 mt-5 pt-5">
-                        <div className="ltr:text-center rtl:text-left">
-                            <Button type="submit" className="btn btn-dark text-center">
-                                Add Employee
-                            </Button>
-                        </div>
+                    <div className="ltr:text-right rtl:text-left">
+                        <Button text={user ? "Update User" : "Add User"} type="submit" className="btn-dark mt-6" />
                     </div>
                 </Card>
             </form>

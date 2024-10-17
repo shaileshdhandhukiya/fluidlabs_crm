@@ -6,6 +6,8 @@ import Tooltip from "@/components/ui/Tooltip";
 import Button from "@/components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import Switch from "@/components/ui/Switch";
+import { deleteRequest } from "../../utils/apiHelper";
+import { toast } from "react-toastify";
 
 import {
   useTable,
@@ -20,26 +22,60 @@ import GlobalFilter from "../table/react-tables/GlobalFilter";
 const deleteUser = async (id, setUsers) => {
   const token = localStorage.getItem("auth_token");
   if (window.confirm("Are you sure you want to delete this customer?")) {
+
     try {
-      const response = await axios.delete(
-        `https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await deleteRequest(`${import.meta.env.VITE_API_BASE_URL}` + "/api/users/" + `${id}`
       );
 
       if (response.status === 200 || response.status === 204) {
         // Remove user from the list locally
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-        alert("User deleted successfully!");
+
+        toast.success("User deleted successfully!", {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
       } else {
-        alert("Failed to delete user. Please try again.");
+
+        toast.warning("Failed to delete user. Please try again.", {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
       }
     } catch (error) {
       console.error("Error deleting user:", error.response || error.message);
-      alert("An error occurred while deleting the user.");
+      // alert("An error occurred while deleting the user.");
+
+      toast.error("An error occurred while deleting the user.", {
+        position: "top-right",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   }
+};
+
+const getImageUrl = (imagePath) => {
+  return `${import.meta.env.VITE_API_BASE_URL}/storage/uploads/${imagePath}`;
 };
 
 const COLUMNS = (navigate, setUsers) => [
@@ -49,17 +85,24 @@ const COLUMNS = (navigate, setUsers) => [
     Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
-    Header: "Name",
-    accessor: "full_name",
-    Cell: (row) => (
+    Header: "Image",
+    accessor: "profile_photo",
+    Cell: (row) =>
       <div className="inline-flex items-center">
         <span className="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none bg-slate-600">
           <img
-            src={row?.cell?.value.profile_photo || 'default-profile.jpg'}
+            src={ getImageUrl(row?.cell?.value) || 'default-profile.jpg'}
             alt="Profile"
             className="object-cover w-full h-full rounded-full"
           />
         </span>
+      </div>,
+  },
+  {
+    Header: "Name",
+    accessor: "full_name",
+    Cell: (row) => (
+      <div className="inline-flex items-center">
         <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
           {row?.cell?.value}
         </span>
@@ -143,19 +186,22 @@ const Customerlist = ({ title = "Employee List" }) => {
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
-        const response = await axios.get(
-          "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users",
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}` + "/api/users",
           config
         );
         const fetchedData = response.data.data;
+        // console.log(fetchedData);
         const mappedData = fetchedData.map((item) => ({
           id: item.id,
+          profile_photo: item.profile_photo,
           full_name: item.first_name + ' ' + item.last_name,
           email: item.email,
           phone: item.phone,
           designation: item.designation,
           status: item.status,
         }));
+        console.log(mappedData);
+
         setUsers(mappedData);
       } catch (error) {
         console.error("Error fetching customer data", error);

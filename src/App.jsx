@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import UserManagement from '../src/pages/users/edit-user';
 
 // home pages  & dashboard
 //import Dashboard from "./pages/dashboard";
@@ -20,8 +21,6 @@ const Subscriptions = lazy(() => import("./pages/subscriptions/subscriptions"));
 const ViewSubscriptions = lazy(() => import("./pages/subscriptions/view-subscriptions"));
 const Roles = lazy(() => import("./pages/role/role"));
 const AddRoles = lazy(() => import("./pages/role/addrole"));
-
-
 
 
 const Login = lazy(() => import("./pages/auth/login"));
@@ -200,6 +199,8 @@ function App() {
           <Route path="tasks" element={<Tasks />} />
           <Route path="users" element={<Users />} />
           <Route path="add-users" element={<AddUsers />} />
+          {/* <Route path="add-users:id" element={<AddUsers />} /> */}
+          <Route path="users/edit/:id" component={UserManagement} />
           <Route path="edit-user/:id" element={<EditUsers />} />
           <Route path="profile/:id" element={<Profile />} />
 
