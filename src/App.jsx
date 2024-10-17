@@ -12,6 +12,8 @@ const ViewCustomers = lazy(() => import("./pages/customers/view-customers"));
 const EditCustomers = lazy(() => import("./pages/customers/view-customers"));
 const Projects = lazy(() => import("./pages/projects/projects"));
 const EditProjects = lazy(() => import("./pages/projects/Edit-Projects"));
+const ViewProjects = lazy(() => import("./pages/projects/project-details"));
+
 const Tasks = lazy(() => import("./pages/projects/projects"));
 const Users = lazy(() => import("./pages/users/user"));
 const AddUsers = lazy(() => import("./pages/users/adduser"));
@@ -192,6 +194,7 @@ function App() {
           <Route path="add-project" element={<AddProject />} />
           <Route path="projects" element={<Projects />} />
           <Route path="edit-project/:id" element={<EditProjects />} />
+          <Route path="view-project/:id" element={<ViewProjects />} />
           <Route path="customers" element={<Customers />} />
           <Route path="add-customers" element={<AddCustomers />} />
           <Route path="customer-profile/:id" element={<ViewCustomers />} />
