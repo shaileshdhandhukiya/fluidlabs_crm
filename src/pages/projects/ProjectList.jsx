@@ -6,6 +6,7 @@ import Tooltip from "@/components/ui/Tooltip";
 import Button from "@/components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import Switch from "@/components/ui/Switch";
+import { fetchProfileImages } from "../../utils/apiHelper";
 
 import {
   useTable,
@@ -43,6 +44,10 @@ const handleDeleteProject = async (id, setProjects) => {
     }
   }
 };
+
+
+// Function to get the user's profile image by user ID
+
 
 const COLUMNS = (navigate, setProjects) => [
   {
@@ -82,21 +87,51 @@ const COLUMNS = (navigate, setProjects) => [
   {
     Header: "Members",
     accessor: "members",
-    Cell: (row) => {
-      const members = row?.cell?.value || [];
+    Cell: ({ cell: { value: members } }) => {
+      
+      const [profileImages, setProfileImages] = useState({});
+
+      useEffect(() => {
+        const fetchImages = async () => {
+          if (members && members.length > 0) {
+
+            const imageUrls = await fetchProfileImages(members);
+
+            const imageMap = members.reduce((acc, member, index) => {
+              const memberId = typeof member === "object" ? member.id : member;
+              acc[memberId] = imageUrls[index];
+              return acc;
+            }, {});
+
+            setProfileImages(imageMap);
+          }
+        };
+
+        fetchImages();
+      }, [members]);
+
       return (
-        <div className="newmem inline-flex items-center">
-          {members.length > 0 ? (
-            members.map((member, index) => {
-              const memberLabel = typeof member === "object" ? member.label : member;
+        <div className="inline-flex items-center">
+          {members && members.length > 0 ? (
+            members.map((member) => {
+              const memberId = typeof member === "object" ? member.id : member;
               return (
-                <Tooltip key={index} content={`Member: ${memberLabel}`} placement="top" arrow animation="shift-away">
-                  <span className="inline-flex items-center">
+                <span key={memberId} className="inline-flex items-center">
+                  {profileImages[memberId] ? (
+                    <span className="inline-flex items-center">
                     <span className="w-7 h-7 rounded-full flex-none bg-slate-600 text-white text-center">
-                      {memberLabel}
+                      <img
+                      src={profileImages[memberId]}
+                      alt="Profile"
+                      loading="lazy"
+                      className="w-7 h-7 rounded-full flex-none bg-slate-600 text-white text-center"
+                    />
                     </span>
                   </span>
-                </Tooltip>
+                  ) : (
+                    <p>No image</p>
+                  )}
+                </span>
               );
             })
           ) : (

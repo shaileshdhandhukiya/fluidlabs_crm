@@ -91,6 +91,7 @@ import User1 from "@/assets/images/all-img/user.png";
 import User2 from "@/assets/images/all-img/user2.png";
 import User3 from "@/assets/images/all-img/user3.png";
 import User4 from "@/assets/images/all-img/user4.png";
+
 export const notifications = [
   {
     title: "Your order is placed",
