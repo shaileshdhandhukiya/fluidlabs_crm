@@ -5,7 +5,7 @@ import axios from "axios";
 
 // Create an axios instance
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: "https://phplaravel-1340915-4916922.cloudwaysapps.com/",
 });
 
 console.log("Base URL ->>",import.meta.env.VITE_API_BASE_URL);

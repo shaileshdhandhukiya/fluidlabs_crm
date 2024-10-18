@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Switch from "@/components/ui/Switch";
 import { deleteRequest } from "../../utils/apiHelper";
 import { toast } from "react-toastify";
-
+import AddTask from "./addtasks";
 import {
   useTable,
   useRowSelect,
@@ -19,19 +19,19 @@ import {
 import GlobalFilter from "../table/react-tables/GlobalFilter";
 
 // Delete user function
-const deleteUser = async (id, setUsers) => {
+const deleteTask = async (id, setTasks) => {
   const token = localStorage.getItem("auth_token");
-  if (window.confirm("Are you sure you want to delete this customer?")) {
+  if (window.confirm("Are you sure you want to delete this Task?")) {
 
     try {
-      const response = await deleteRequest("https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users/" + `${id}`
+      const response = await deleteRequest("https://phplaravel-1340915-4916922.cloudwaysapps.com/api/tasks/" + `${id}`
       );
 
       if (response.status === 200 || response.status === 204) {
         // Remove user from the list locally
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+        setTasks((prevUsers) => prevUsers.filter((user) => user.id !== id));
 
-        toast.success("User deleted successfully!", {
+        toast.success("Task deleted successfully!", {
           position: "top-right",
           autoClose: 1500,
           hideProgressBar: false,
@@ -44,7 +44,7 @@ const deleteUser = async (id, setUsers) => {
 
       } else {
 
-        toast.warning("Failed to delete user. Please try again.", {
+        toast.warning("Failed to delete Task. Please try again.", {
           position: "top-right",
           autoClose: 1500,
           hideProgressBar: false,
@@ -60,7 +60,7 @@ const deleteUser = async (id, setUsers) => {
       console.error("Error deleting user:", error.response || error.message);
       // alert("An error occurred while deleting the user.");
 
-      toast.error("An error occurred while deleting the user.", {
+      toast.error("An error occurred while deleting the Task.", {
         position: "top-right",
         autoClose: 1500,
         hideProgressBar: false,
@@ -78,56 +78,105 @@ const getImageUrl = (imagePath) => {
   return `https://phplaravel-1340915-4916922.cloudwaysapps.com/storage/uploads/${imagePath}`;
 };
 
-const COLUMNS = (navigate, setUsers) => [
+const COLUMNS = (navigate, setTasks) => [
   {
     Header: "Id",
     accessor: "id",
     Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
-    Header: "Image",
-    accessor: "profile_photo",
-    Cell: (row) =>
-      <div className="inline-flex items-center">
-        <span className="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none bg-slate-600">
-          <img
-            src={ getImageUrl(row?.cell?.value) || 'default-profile.jpg'}
-            alt="Profile"
-            className="object-cover w-full h-full rounded-full"
-          />
-        </span>
-      </div>,
-  },
-  {
-    Header: "Name",
-    accessor: "full_name",
-    Cell: (row) => (
-      <div className="inline-flex items-center">
-        <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
-          {row?.cell?.value}
-        </span>
-      </div>
-    ),
-  },
-  {
-    Header: "Email Address",
-    accessor: "email",
-    Cell: (row) => <span>{row?.cell?.value}</span>,
-  },
-  {
-    Header: "Phone",
-    accessor: "phone",
-    Cell: (row) => <span>{row?.cell?.value}</span>,
-  },
-  {
-    Header: "Designation",
-    accessor: "designation",
+    Header: "Task Name",
+    accessor: "subject",
     Cell: (row) => <span>{row?.cell?.value}</span>,
   },
   {
     Header: "Status",
     accessor: "status",
-    Cell: (row) => <Switch value={row?.cell?.value} />,
+    Cell: ({ cell }) => {
+      const statusValue = cell.value;
+      const statusClasses = {
+        "in progress": "text-success-500 bg-success-500",
+        cancelled: "text-warning-500 bg-warning-500",
+        "Not Started": "text-danger-500 bg-danger-500",
+        delivered: "text-primary-500 bg-primary-500",
+      };
+      const statusClass = statusClasses[statusValue] || "text-gray-500 bg-gray-300"; // Default style
+
+      return (
+        <span className="block w-full">
+          <span
+            className={`inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 ${statusClass}`}
+          >
+            {statusValue}
+          </span>
+        </span>
+      );
+    },
+  },
+  {
+    Header: "Start Date",
+    accessor: "start_date",
+    Cell: (row) => <span>{row?.cell?.value}</span>,
+  },
+  {
+    Header: "Due Date",
+    accessor: "due_date",
+    Cell: (row) => <span>{row?.cell?.value}</span>,
+  },
+  {
+    Header: "Project",
+    accessor: "project_name", // Ensure alignment with mapped data
+  },
+  {
+    Header: "Members",
+    accessor: "assignees",
+    Cell: (row) => {
+      const members = row?.cell?.value || [];
+      return (
+        <div className="newmem inline-flex items-center">
+          {members.length > 0 ? (
+            members.map((member, index) => {
+              const memberLabel = typeof member === "object" ? member.label : member;
+              return (
+                <Tooltip key={index} content={`Member: ${memberLabel}`} placement="top" arrow animation="shift-away">
+                  <span className="inline-flex items-center">
+                    <span className="w-7 h-7 rounded-full flex-none bg-slate-600 text-white text-center">
+                      {memberLabel}
+                    </span>
+                  </span>
+                </Tooltip>
+              );
+            })
+          ) : (
+            <span>No Members</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    Header: "Priority",
+    accessor: "priority",
+    Cell: ({ cell }) => {
+      const statusValue = cell.value;
+      const statusClasses = {
+        "in progress": "text-success-500",
+        cancelled: "text-warning-500",
+        "Not Started": "text-danger-500",
+        delivered: "text-primary-500",
+      };
+      const statusClass = statusClasses[statusValue] || "text-gray-500"; // Default style
+
+      return (
+        <span className="block w-full">
+          <span
+            className={`inline-block rounded-[999px] ${statusClass}`}
+          >
+            {statusValue}
+          </span>
+        </span>
+      );
+    },
   },
   {
     Header: "Action",
@@ -162,7 +211,7 @@ const COLUMNS = (navigate, setUsers) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => deleteUser(row.original.id, setUsers)}
+            onClick={() => deleteTask(row.original.id, setTasks)}
           >
             <Icon icon="heroicons:trash" />
           </button>
@@ -172,12 +221,12 @@ const COLUMNS = (navigate, setUsers) => [
   },
 ];
 
-const Customerlist = ({ title = "Employee List" }) => {
-  const [customers, setUsers] = useState([]);
+const Customerlist = ({ title = "Tasks Summary" }) => {
+  const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
 
-  // Memoize the columns definition to pass navigate and setUsers functions
-  const columns = useMemo(() => COLUMNS(navigate, setUsers), [navigate]);
+  // Memoize the columns definition to pass navigate and setTasks functions
+  const columns = useMemo(() => COLUMNS(navigate, setTasks), [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -186,23 +235,25 @@ const Customerlist = ({ title = "Employee List" }) => {
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
-        const response = await axios.get("https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users",
+        const response = await axios.get("https://phplaravel-1340915-4916922.cloudwaysapps.com/api/tasks",
           config
         );
         const fetchedData = response.data.data;
-        // console.log(fetchedData);
         const mappedData = fetchedData.map((item) => ({
           id: item.id,
-          profile_photo: item.profile_photo,
-          full_name: item.first_name + ' ' + item.last_name,
-          email: item.email,
-          phone: item.phone,
-          designation: item.designation,
+          subject: item.subject,
+          start_date: item.start_date,
+          due_date: item.due_date,
+          priority: item.priority,
           status: item.status,
+          assignees: item.assignees.map((assignee) => ({
+            label: `${assignee}`, // Assuming assignee is a user ID
+          })),
+          project_name: item.project?.project_name || "N/A",
         }));
         console.log(mappedData);
 
-        setUsers(mappedData);
+        setTasks(mappedData);
       } catch (error) {
         console.error("Error fetching customer data", error);
       }
@@ -211,7 +262,7 @@ const Customerlist = ({ title = "Employee List" }) => {
   }, []);
 
   const tableInstance = useTable(
-    { columns, data: customers },
+    { columns, data: tasks },
     useGlobalFilter,
     useSortBy,
     usePagination,
@@ -244,13 +295,7 @@ const Customerlist = ({ title = "Employee List" }) => {
         <h4 className="card-title">{title}</h4>
         <div className="md:flex justify-between items-center">
           <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
-          <Button
-            icon="heroicons-outline:plus"
-            text="Add Employee"
-            className="bg-slate-800 dark:hover:bg-opacity-70 h-min text-sm font-medium text-slate-50 hover:ring-2 hover:ring-opacity-80 ring-slate-900 hover:ring-offset-1 btn-sm dark:hover:ring-0 dark:hover:ring-offset-0 ml-5"
-            iconclassName="text-lg"
-            onClick={() => navigate("/add-users")}
-          />
+          <AddTask />
         </div>
       </div>
       <div className="overflow-x-auto -mx-6">

@@ -26,6 +26,12 @@ export const menuItems = [
     ],
   },
   {
+    title: "Tasks",
+    isHide: true,
+    icon: "heroicons-outline:chart-pie",
+    link: "tasks",
+  }, 
+  {
     title: "Customers",
     icon: "heroicons-outline:users",
     link: "#",
@@ -41,12 +47,7 @@ export const menuItems = [
       },
     ],
   },
-  {
-    title: "Tasks",
-    isHide: true,
-    icon: "heroicons-outline:chart-pie",
-    link: "tasks",
-  }, 
+  
   {
     title: "Staff",
     icon: "heroicons-outline:academic-cap",

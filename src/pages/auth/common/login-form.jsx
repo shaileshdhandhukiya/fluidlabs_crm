@@ -34,7 +34,7 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const URL = `${import.meta.env.VITE_API_BASE_URL}`+"/api/login";
+      const URL = "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/login";
 
       const response = await axios.post(URL, data);
 

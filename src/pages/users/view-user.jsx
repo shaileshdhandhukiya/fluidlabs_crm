@@ -52,7 +52,9 @@ const buttons = [
     icon: "heroicons-outline:cog",
   },
 ];
-
+const getImageUrl = (imagePath) => {
+  return `https://phplaravel-1340915-4916922.cloudwaysapps.com/storage/uploads/${imagePath}`;
+};
 const Profile = () => {
   const { id } = useParams(); 
   const [formData, setFormData] = useState({
@@ -131,7 +133,7 @@ const Profile = () => {
       billing_type: selectedOption.value,
     });
   };
-
+  
   // Function to handle form submission
   const handleFormSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
@@ -199,7 +201,7 @@ const Profile = () => {
               <div className="flex-none">
                 <div className="md:h-[186px] md:w-[186px] h-[140px] w-[140px] md:ml-0 md:mr-0 ml-auto mr-auto md:mb-0 mb-4 rounded-full ring-4 ring-slate-100 relative">
                   <img
-                    src={ProfileImage}
+                    src={getImageUrl(formData.profile_photo)}
                     alt=""
                     className="w-full h-full object-cover rounded-full"
                   />
