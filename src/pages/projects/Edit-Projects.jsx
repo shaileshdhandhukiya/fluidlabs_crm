@@ -7,7 +7,9 @@ import axios from "axios";
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'flatpickr/dist/themes/material_green.css'; // Import Flatpickr style
-
+const getImageUrl = (imagePath) => {
+  return `https://phplaravel-1340915-4916922.cloudwaysapps.com/storage/uploads/${imagePath}`;
+};
 const OptionComponent = ({ data, ...props }) => {
   return (
     <components.Option {...props}>
@@ -15,7 +17,7 @@ const OptionComponent = ({ data, ...props }) => {
         <div className="flex-none">
           <div className="h-7 w-7 rounded-full">
             <img
-              src={data.image}
+              src={getImageUrl(data.profile_photo)}
               alt=""
               className="w-full h-full rounded-full"
             />
@@ -110,6 +112,7 @@ const EditProject = () => {
         const memberOptions = fetchedData.map((item) => ({
           label: `${item.first_name} ${item.last_name}`, // Combine first and last name
           value: item.id,  // Store the user ID
+          profile_photo: item.profile_photo,
         }));
         setMembers(memberOptions);
       } catch (error) {

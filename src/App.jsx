@@ -203,7 +203,7 @@ function App() {
           <Route path="edit-profile/:id" element={<EditCustomers />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="view-task" element={<ViewTasks />} />
-          <Route path="edit-tasks" element={<EditTasks />} />
+          <Route path="edit-task/:id" element={<EditTasks />} />
           <Route path="users" element={<Users />} />
           <Route path="add-users" element={<AddUsers />} />
           {/* <Route path="add-users:id" element={<AddUsers />} /> */}

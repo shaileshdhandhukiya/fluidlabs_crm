@@ -119,3 +119,27 @@
   margin-left: -5px;
 }
 
+button.action-btn.btnwithout {
+  border: none;
+  padding: 0;
+  height: auto;
+  width: auto;
+}
+.htborder button.btnwithout {
+  border-right: 1px solid #000;
+  border-radius: 0;
+  padding-right: 5px;
+  margin-left: 5px !important;
+}
+
+.htborder button.btnwithout:first-child {
+  margin: 0 !important;
+}
+
+.htborder button.btnwithout:last-child {
+  border: navajowhite;
+}
+h2.calendar-title {
+  font-size: 23px;
+  margin: 10px 0;
+}
