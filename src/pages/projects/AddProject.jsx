@@ -26,7 +26,9 @@ const styles = {
         fontSize: "14px",
     }),
 };
-
+const getImageUrl = (imagePath) => {
+    return `https://phplaravel-1340915-4916922.cloudwaysapps.com/storage/uploads/${imagePath}`;
+};
 const OptionComponent = ({ data, ...props }) => {
     return (
         <components.Option {...props}>
@@ -34,7 +36,7 @@ const OptionComponent = ({ data, ...props }) => {
                 <div className="flex-none">
                     <div className="h-7 w-7 rounded-full">
                         <img
-                            src={data.image}
+                            src={getImageUrl(data.profile_photo)}
                             alt=""
                             className="w-full h-full rounded-full"
                         />
@@ -109,6 +111,7 @@ const AddProject = () => {
                 const usersOptions = fetchedData.map((item) => ({
                     label: `${item.first_name} ${item.last_name}`, // Combine first and last name
                     value: item.id,  // Only store the user ID
+                    profile_photo: item.profile_photo,
                 }));
                 setMembers(usersOptions);
             } catch (error) {

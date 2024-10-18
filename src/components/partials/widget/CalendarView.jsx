@@ -1,12 +1,21 @@
-import React, { useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import React from "react";
+import Calendar from "@ericz1803/react-google-calendar";
+
+const API_KEY = "AIzaSyDv5YlXRnsOmtQcb-6llVfDOxIcTUajDrQ";
+let calendars = [
+  { calendarId: "hitesh@fluidlabs.co.uk" },
+  {
+    calendarId: "en-gb.indian#holiday@group.v.calendar.google.com",
+    color: "#B241D1", // Specify color for the second calendar's events
+  },
+];
 
 const CalendarView = () => {
-  const [value, onChange] = useState(new Date());
   return (
-    <div>
-      <Calendar onChange={onChange} value={value} />
+    <div className="calendar-container">
+      <div className="calendar-wrapper">
+        <Calendar apiKey={API_KEY} calendars={calendars} />
+      </div>
     </div>
   );
 };

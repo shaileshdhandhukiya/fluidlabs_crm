@@ -31,6 +31,9 @@ const styles = {
         fontSize: "14px",
     }),
 };
+const getImageUrl = (imagePath) => {
+    return `https://phplaravel-1340915-4916922.cloudwaysapps.com/storage/uploads/${imagePath}`;
+  };
 const OptionComponent = ({ data, ...props }) => {
     return (
         <components.Option {...props}>
@@ -38,7 +41,7 @@ const OptionComponent = ({ data, ...props }) => {
                 <div className="flex-none">
                     <div className="h-7 w-7 rounded-full">
                         <img
-                            src={data.image}
+                            src={getImageUrl(data.profile_photo)}
                             alt=""
                             className="w-full h-full rounded-full"
                         />
@@ -62,10 +65,11 @@ const AddTask = () => {
         priority: "",
         status: "",
         project_id: "",  // Store the selected customer (only the customer ID)
-        assignees: [],   // Store the selected members (array of member IDs)
+        assignees: [],
+        attach_file:"",   // Store the selected members (array of member IDs)
     });
 
-    const [profilePhoto, setProfilePhoto] = useState(null);
+    const [attach_file, setProfilePhoto] = useState(null);
     const [assignees, setMembers] = useState([]);
     const [picker, setPicker] = useState(new Date());
     const [task_description, setDescription] = useState("");
@@ -117,6 +121,7 @@ const AddTask = () => {
                 const usersOptions = fetchedData.map((item) => ({
                     label: `${item.first_name} ${item.last_name}`, // Combine first and last name
                     value: item.id,  // Only store the user ID
+                    profile_photo: item.profile_photo,
                 }));
                 setMembers(usersOptions);
             } catch (error) {
@@ -191,7 +196,7 @@ const AddTask = () => {
 
             if (response.status === 200 || response.status === 201) {
                 alert("Task added successfully!");
-                navigate("/projects");
+                navigate("/tasks");
             } else {
                 alert("Failed to add task");
             }
@@ -322,19 +327,19 @@ const AddTask = () => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="profile_photo" className="form-label">Profile Photo</label>
+                            <label htmlFor="attach_file" className="form-label">Upload File</label>
                             <Fileinput
-                                name="profile_photo"
-                                id="profile_photo"
+                                name="attach_file"
+                                id="attach_file"
                                 type="file"
-                                value={profilePhoto}
+                                value={attach_file}
                                 onChange={handleFileChange}
                             />
                         </div>
                     </div>
                     <div className="lg:grid-cols-1 grid gap-5 grid-cols-1 mt-2.5">
                         <div className="fromGroup mb-5">
-                            <label className="form-label" htmlFor="task_description">Project Description</label>
+                            <label className="form-label" htmlFor="task_description">Task Description</label>
                             <ReactQuill
                                 theme="snow"
                                 id="task_description"
