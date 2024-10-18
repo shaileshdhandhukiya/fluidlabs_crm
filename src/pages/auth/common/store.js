@@ -29,6 +29,7 @@ export const authSlice = createSlice({
     isAuth: initialIsAuth(),
   },
   reducers: {
+    
     handleRegister: (state, action) => {
       const { name, email, password } = action.payload;
       const user = state.users.find((user) => user.email === email);
@@ -65,6 +66,7 @@ export const authSlice = createSlice({
     },
 
     handleLogin: (state, action) => {
+      
       state.isAuth = action.payload;
       // save isAuth in local storage
       window.localStorage.setItem("isAuth", JSON.stringify(state.isAuth));

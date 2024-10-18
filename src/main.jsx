@@ -9,13 +9,18 @@ import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import store from "./store";
 import "react-toastify/dist/ReactToastify.css";
+import { GoogleOAuthProvider } from "@react-oauth/google"; // Import GoogleOAuthProvider
+
+const clientId = "334573321049-q867oo624h4djsu8uv037k4rrkh9s8sp.apps.googleusercontent.com";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <>
-    <BrowserRouter>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={clientId}>
+      <BrowserRouter>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   </>
 );
