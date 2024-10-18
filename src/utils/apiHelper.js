@@ -1,6 +1,6 @@
 import axios from "axios";
 
-
+let domainURL = import.meta.env.VITE_API_BASE_URL || "https://phplaravel-1340915-4916922.cloudwaysapps.com";
 // console.log(localStorage.getItem("auth_token"));
 
 // Create an axios instance
@@ -94,7 +94,7 @@ const fetchAllUsersAndStore = async () => {
 
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/api/users`,
+            `${domainURL}/api/users`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -131,7 +131,7 @@ export const fetchProfileImages = async (userIds) => {
         const user = usersData ? usersData.find(u => u.id === userId) : null;
 
         if (user && user.profile_photo) {
-            return `${import.meta.env.VITE_API_BASE_URL}/storage/uploads/${user.profile_photo}`;
+            return `${domainURL}/storage/uploads/${user.profile_photo}`;
         } else {
             console.error("User not found or no profile photo:", userId);
             return null; 
