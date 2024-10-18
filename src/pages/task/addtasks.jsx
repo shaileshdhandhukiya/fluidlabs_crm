@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";  // Import useNavigate hook
 import Card from "@/components/ui/Card";
 import Textinput from "@/components/ui/Textinput";
 import Button from "@/components/ui/Button";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import Textarea from "@/components/ui/Textarea";
 import InputGroup from "@/components/ui/InputGroup";
 import Icon from "@/components/ui/Icon";
@@ -55,21 +55,77 @@ const openModal = () => {
 };
 const AddTask = () => {
     const [formData, setFormData] = useState({
-        project_name: "",
+        subject: "",
         start_date: "",
-        deadline: "",
-        description: "",
+        due_date: "",
+        task_description: "",
+        priority: "",
         status: "",
-        customer: "",  // Store the selected customer (only the customer ID)
-        members: [],   // Store the selected members (array of member IDs)
+        project_id: "",  // Store the selected customer (only the customer ID)
+        assignees: [],   // Store the selected members (array of member IDs)
     });
 
     const [profilePhoto, setProfilePhoto] = useState(null);
-    const [members, setMembers] = useState([]);
+    const [assignees, setMembers] = useState([]);
     const [picker, setPicker] = useState(new Date());
-    const [description, setDescription] = useState("");
-
+    const [task_description, setDescription] = useState("");
+    const [projects, setProjects] = useState("");
     const navigate = useNavigate();  // Initialize useNavigate hook
+
+    useEffect(() => {
+        // Fetch Project from API
+        const fetchProjects = async () => {
+            try {
+                const token = localStorage.getItem("auth_token");
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` },
+                };
+                const response = await axios.get(
+                    "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/projects",
+                    config
+                );
+
+                // Accessing the "data" array within the response
+                const fetchedData = response.data.data;
+                const projectOptions = fetchedData.map((item) => ({
+                    label: item.project_name,
+                    value: item.id,  // Only store the project ID
+                }));
+                setProjects(projectOptions);
+            } catch (error) {
+                console.error("Error fetching Project :", error);
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
+    useEffect(() => {
+        // Fetch users from API
+        const fetchUsers = async () => {
+            try {
+                const token = localStorage.getItem("auth_token");
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` },
+                };
+                const response = await axios.get(
+                    "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/users",
+                    config
+                );
+
+                const fetchedData = response.data.data;
+                const usersOptions = fetchedData.map((item) => ({
+                    label: `${item.first_name} ${item.last_name}`, // Combine first and last name
+                    value: item.id,  // Only store the user ID
+                }));
+                setMembers(usersOptions);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -82,37 +138,42 @@ const AddTask = () => {
         const file = e.target.files[0];
         if (file) {
             setProfilePhoto(file);
-            console.log("Profile photo selected:", file);
+            console.log("File  selected:", file);
         } else {
             console.error("No file selected");
         }
     };
-    const handleBillingChange = (selectedOption) => {
-        setFormData({
-            ...formData,
-            billing_duration: selectedOption.value,
-        });
+
+    const handleStatusChange = (field, selectedOption) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [field]: selectedOption.value, // Extract the value for status
+        }));
     };
-    const handleStatusChange = (selectedOption) => {
-        setFormData({
-            ...formData,
-            status: selectedOption.value,
-        });
-    };
-    const handleCurrencyChange = (selectedOption) => {
-        setFormData({
-            ...formData,
-            currency: selectedOption.value,
-        });
+
+    const handleSelectChange = (field, selectedOption) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [field]: selectedOption,
+        }));
     };
     const handleQuillChange = (content) => {
         setDescription(content); // Update state with Quill content
     };
-
+    const handleDateChange = (field, date) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [field]: date[0].toISOString().split('T')[0], // Convert date to yyyy-MM-dd format
+        }));
+    };
+    const handleProjectChange = (option) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            project_id: option.value, // Only store the project ID, not the label
+        }));
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Get the authentication token from localStorage
         const token = localStorage.getItem("auth_token");
 
         if (!token) {
@@ -121,22 +182,18 @@ const AddTask = () => {
         }
 
         try {
+            const config = { headers: { Authorization: `Bearer ${token}` } };
             const response = await axios.post(
                 "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/tasks",
                 formData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,  // Add the token to the Authorization header
-                    },
-                }
+                config
             );
 
             if (response.status === 200 || response.status === 201) {
                 alert("Task added successfully!");
-                navigate("/tasks"); 
+                navigate("/projects");
             } else {
-                alert("Failed to add Task");
+                alert("Failed to add task");
             }
         } catch (error) {
             console.error("Error submitting the form:", error);
@@ -168,34 +225,34 @@ const AddTask = () => {
                 label="Add Task"
                 labelClass="btn-outline-dark"
                 uncontrol
+                className="max-w-5xl"
             >
                 <form onSubmit={handleSubmit}>
-                    <div className="lg:grid-cols-1 grid gap-5 grid-cols-1">
+                    <div className="lg:grid-cols-2 grid gap-5 grid-cols-1">
 
                         <div>
                             <Textinput
                                 label="Task Name"
-                                id="name"
+                                id="subject"
                                 type="text"
-                                placeholder="Hosting"
+                                placeholder="Project Task"
                                 value={formData.subject}
                                 onChange={handleInputChange}
                             />
                         </div>
                         <div>
-                            <label htmlFor="billing_duration" className="form-label">Select Project</label>
+                            <label htmlFor="project" className="form-label">Project</label>
                             <Select
-                                options={[
-                                    { label: "Monthly", value: "monthly" },
-                                    { label: "Quarterly", value: "quarterly" },
-                                    { label: "Yearly", value: "yearly" },
-                                ]}
+                                options={projects}
+                                value={formData.projects}
                                 styles={styles}
                                 className="react-select"
                                 classNamePrefix="select"
-                                id="billing_duration"
-                                onChange={handleBillingChange}
+                                placeholder="Select Projects"
+                                id="projects"
+                                onChange={handleProjectChange}
                             />
+                            
                         </div>
                         <div>
                             <label htmlFor="start_date" className="form-label">Start Date</label>
@@ -207,48 +264,47 @@ const AddTask = () => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="deadline" className="form-label">End Date</label>
+                            <label htmlFor="due_date" className="form-label">End Date</label>
                             <Flatpickr
                                 className="form-control py-2"
                                 value={picker}
-                                onChange={(date) => handleDateChange('deadline', date)}
-                                id="deadline"
+                                onChange={(date) => handleDateChange('due_date', date)}
+                                id="due_date"
                             />
                         </div>
                         <div>
-                            <label htmlFor="members" className="form-label">Task Assigne</label>
+                            <label htmlFor="assignees" className="form-label">Task Assigne</label>
                             <Select
-                                options={members}
-                                value={formData.members}
+                                options={assignees}
+                                value={formData.assignees}
                                 styles={styles}
                                 className="react-select"
                                 classNamePrefix="select"
                                 isMulti
                                 components={{ Option: OptionComponent }}
-                                placeholder="Select Members"
-                                id="members"
-                                onChange={(selectedOption) => handleSelectChange("members", selectedOption)}
+                                placeholder="Select assignees"
+                                id="assignees"
+                                onChange={(selectedOption) => handleSelectChange("assignees", selectedOption)}
                             />
                         </div>
                         <div>
-                            <label htmlFor="status" className="form-label">Status</label>
+                            <label htmlFor="priority" className="form-label">Priority</label>
                             <Select
                                 options={[
                                     { label: "Low", value: "low" },
                                     { label: "Medium", value: "medium" },
                                     { label: "High", value: "high" },
-                                    { label: "Urgent", value: "urgent" },
                                 ]}
                                 styles={styles}
                                 className="react-select"
                                 classNamePrefix="select"
                                 placeholder="Select Status"
-                                id="status"
-                                onChange={(selectedOption) => handleStatusChange("status", selectedOption)}
+                                id="priority"
+                                onChange={(selectedOption) => handleStatusChange("priority", selectedOption)}
                             />
                         </div>
                         <div>
-                            <label htmlFor="status" className="form-label">Priority </label>
+                            <label htmlFor="status" className="form-label">Status </label>
                             <Select
                                 options={[
                                     { label: "in progress", value: "in progress" },
@@ -278,10 +334,11 @@ const AddTask = () => {
                     </div>
                     <div className="lg:grid-cols-1 grid gap-5 grid-cols-1 mt-2.5">
                         <div className="fromGroup mb-5">
-                            <label className="form-label" htmlFor="description">Project Description</label>
+                            <label className="form-label" htmlFor="task_description">Project Description</label>
                             <ReactQuill
                                 theme="snow"
-                                value={description}
+                                id="task_description"
+                                value={task_description}
                                 onChange={handleQuillChange}
                                 placeholder="Write project description"
                                 modules={modules}  // Add custom toolbar modules here
