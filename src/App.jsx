@@ -4,7 +4,7 @@ import UserManagement from '../src/pages/users/edit-user';
 
 // home pages  & dashboard
 //import Dashboard from "./pages/dashboard";
-const Dashboard = lazy(() => import("./pages/dashboard/project"));
+const Dashboard = lazy(() => import("./pages/dashboard"));
 const AddProject = lazy(() => import("./pages/projects/AddProject"));
 const Customers = lazy(() => import("./pages/customers/customers"));
 const AddCustomers = lazy(() => import("./pages/customers/addcustomer"));

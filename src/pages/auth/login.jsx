@@ -24,6 +24,7 @@ const Login3 = () => {
 
   // Google login handler
   const googleLogin = useGoogleLogin({
+    
     onSuccess: async (tokenResponse) => {
       const { access_token } = tokenResponse;
 

@@ -64,30 +64,6 @@ export const getImageUrl = (imagePath) => {
 
 const profileImageCache = {};
 
-// Function to get the user's profile image by user ID
-// export const fetchProfileImage = async (userId) => {
-//   const token = localStorage.getItem("auth_token");
-//   try {
-
-//     const response = await axios.get(
-//       `${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-
-//     const img = response.data.data.profile_photo;
-//     return `${import.meta.env.VITE_API_BASE_URL}/storage/uploads/${img}`;
-
-//   } catch (error) {
-//     console.error("Error fetching profile image:", error);
-//     return null;
-//   }
-// };
-
-
 // Function to fetch all users and store them in localStorage
 const fetchAllUsersAndStore = async () => {
     const token = localStorage.getItem("auth_token");

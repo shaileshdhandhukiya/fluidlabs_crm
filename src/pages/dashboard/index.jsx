@@ -1,124 +1,98 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@/components/ui/Card";
-import ImageBlock1 from "@/components/partials/widget/block/image-block-1";
-import GroupChart1 from "@/components/partials/widget/chart/group-chart-1";
-import RevenueBarChart from "@/components/partials/widget/chart/revenue-bar-chart";
-import RadialsChart from "@/components/partials/widget/chart/radials";
+import Icon from "@/components/ui/Icon";
+import GroupChart4 from "@/components/partials/widget/chart/group-chart-4";
+import DonutChart from "./donut-chart";
+import BasicArea from "../chart/appex-chart/BasicArea";
 import SelectMonth from "@/components/partials/SelectMonth";
-import CompanyTable from "@/components/partials/Table/company-table";
-import RecentActivity from "@/components/partials/widget/recent-activity";
-import MostSales from "../../components/partials/widget/most-sales";
-import RadarChart from "../../components/partials/widget/chart/radar-chart";
+import MessageList from "@/components/partials/widget/message-list";
+import TrackingParcel from "../../components/partials/widget/activity";
+import TeamTable from "@/components/partials/Table/team-table";
+import { meets, files } from "@/constant/data";
+import CalendarView from "@/components/partials/widget/CalendarView";
 import HomeBredCurbs from "./HomeBredCurbs";
+import { getRequest } from '../../utils/apiHelper';
+import ProjectList from './Project-list';
+import TaskList from './task-list';
 
-const Dashboard = () => {
-  const [filterMap, setFilterMap] = useState("usa");
+const ProjectPage = () => {
+
+  const [data, setData] = useState({
+    projects: [],
+    tasks: [],
+    charts:[],
+  });
+  const [loading, setLoading] = useState(true);
+
+  // Fetch data from API once
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getRequest('/api/dashboard/analytics');
+        if (response.success) {
+          setData({
+            projects: response.data.recent_projects,
+            tasks: response.data.recent_tasks,
+            charts:response.data.project_analytics,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div>
-      <HomeBredCurbs title="Dashboard" />
-      <div className="grid grid-cols-12 gap-5 mb-5">
-        <div className="2xl:col-span-3 lg:col-span-4 col-span-12">
-          <ImageBlock1 />
-        </div>
-        <div className="2xl:col-span-9 lg:col-span-8 col-span-12">
-          <Card bodyClass="p-4">
-            <div className="grid md:grid-cols-3 col-span-1 gap-4">
-              <GroupChart1 />
-            </div>
-          </Card>
-        </div>
-      </div>
+    <div className="space-y-5">
+      <HomeBredCurbs title="Project" />
       <div className="grid grid-cols-12 gap-5">
-        <div className="lg:col-span-8 col-span-12">
+        <div className="lg:col-span-8 col-span-12 space-y-5">
           <Card>
-            <div className="legend-ring">
-              <RevenueBarChart />
+            <div className="grid grid-cols-12 gap-5">
+              <div className="xl:col-span-8 col-span-12">
+                <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
+                  <GroupChart4 />
+                </div>
+              </div>
+
+              <div className="xl:col-span-4 col-span-12">
+                <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-4">
+                  <span className="block dark:text-slate-400 text-sm text-slate-600">
+                    Progress
+                  </span>
+                  <DonutChart projectAnalytics={data.charts} height={113}/>
+                </div>
+              </div>
             </div>
           </Card>
-        </div>
-        <div className="lg:col-span-4 col-span-12">
-          <Card title="Overview" headerslot={<SelectMonth />}>
-            <RadialsChart />
+          <Card title="Team members" noborder>
+            <TeamTable />
+          </Card>
+          <Card title="Calender" noborder>
+            <CalendarView />
           </Card>
         </div>
-        <div className="lg:col-span-8 col-span-12">
-          <Card title="All Company" headerslot={<SelectMonth />} noborder>
-            <CompanyTable />
+        <div className="lg:col-span-4 col-span-12 space-y-5">
+          <Card title="Tasks">
+            <div className="mb-12">
+            {!loading && (
+                <>
+                  <TaskList tasks={data.tasks} />
+                </>
+              )}
+            </div>
           </Card>
-        </div>
-        <div className="lg:col-span-4 col-span-12">
-          <Card title="Recent Activity" headerslot={<SelectMonth />}>
-            <RecentActivity />
-          </Card>
-        </div>
-        <div className="lg:col-span-8 col-span-12">
-          <Card
-            title="Most Sales"
-            headerslot={
-              <div className="border border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded p-1 flex items-center">
-                <span
-                  className={` flex-1 text-sm font-normal px-3 py-1 transition-all duration-150 rounded cursor-pointer
-                ${
-                  filterMap === "global"
-                    ? "bg-slate-900 text-white dark:bg-slate-700 dark:text-slate-300"
-                    : "dark:text-slate-300"
-                }  
-                `}
-                  onClick={() => setFilterMap("global")}
-                >
-                  Global
-                </span>
-                <span
-                  className={` flex-1 text-sm font-normal px-3 py-1 rounded transition-all duration-150 cursor-pointer
-                  ${
-                    filterMap === "usa"
-                      ? "bg-slate-900 text-white dark:bg-slate-700 dark:text-slate-300"
-                      : "dark:text-slate-300"
-                  }
-              `}
-                  onClick={() => setFilterMap("usa")}
-                >
-                  USA
-                </span>
-              </div>
-            }
-          >
-            <MostSales filterMap={filterMap} />
-          </Card>
-        </div>
-        <div className="lg:col-span-4 col-span-12">
-          <Card title="Overview" headerslot={<SelectMonth />}>
-            <RadarChart />
-            <div className="bg-slate-50 dark:bg-slate-900 rounded p-4 mt-8 flex justify-between flex-wrap">
-              <div className="space-y-1">
-                <h4 className="text-slate-600 dark:text-slate-200 text-xs font-normal">
-                  Invested amount
-                </h4>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">
-                  $8264.35
-                </div>
-                <div className="text-slate-500 dark:text-slate-300 text-xs font-normal">
-                  +0.001.23 (0.2%)
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <h4 className="text-slate-600 dark:text-slate-200 text-xs font-normal">
-                  Invested amount
-                </h4>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">
-                  $8264.35
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <h4 className="text-slate-600 dark:text-slate-200 text-xs font-normal">
-                  Invested amount
-                </h4>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">
-                  $8264.35
-                </div>
-              </div>
+          <Card title="Projects">
+            <div className="mb-12">
+            {!loading && (
+                <>
+                   <ProjectList projects={data.projects} />
+                </>
+              )}
             </div>
           </Card>
         </div>
@@ -127,4 +101,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ProjectPage;
