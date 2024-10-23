@@ -70,7 +70,7 @@ const ProjectPage = () => {
             </div>
           </Card>
           <Card title="Team members" noborder>
-            <TeamTable />
+            {/* <TeamTable /> */}
           </Card>
           <Card title="Calender" noborder>
             <CalendarView />
