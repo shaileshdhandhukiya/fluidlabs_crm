@@ -167,7 +167,7 @@ const EditProject = () => {
     if (customers.length && members.length) {
       fetchProjectData();
     }
-  }, [id, customers, members]);  // Trigger this useEffect only after customers and members have been fetched
+  }, [id, customers, members]); 
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;

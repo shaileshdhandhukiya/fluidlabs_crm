@@ -196,7 +196,7 @@ const COLUMNS = (navigate, setTasks) => [
           <button
             className="action-btn"
             type="button"
-            onClick={() => navigate(`/edit-user/${row.original.id}`)}
+            onClick={() => navigate(`/edit-task/${row.original.id}`)}
           >
             <Icon icon="heroicons:pencil-square" />
           </button>

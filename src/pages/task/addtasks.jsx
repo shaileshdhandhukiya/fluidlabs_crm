@@ -33,7 +33,7 @@ const styles = {
 };
 const getImageUrl = (imagePath) => {
     return `https://phplaravel-1340915-4916922.cloudwaysapps.com/storage/uploads/${imagePath}`;
-  };
+};
 const OptionComponent = ({ data, ...props }) => {
     return (
         <components.Option {...props}>
@@ -66,7 +66,7 @@ const AddTask = () => {
         status: "",
         project_id: "",  // Store the selected customer (only the customer ID)
         assignees: [],
-        attach_file:"",   // Store the selected members (array of member IDs)
+        attach_file: "",   // Store the selected members (array of member IDs)
     });
 
     const [attach_file, setProfilePhoto] = useState(null);
@@ -74,7 +74,7 @@ const AddTask = () => {
     const [picker, setPicker] = useState(new Date());
     const [task_description, setDescription] = useState("");
     const [projects, setProjects] = useState("");
-    const navigate = useNavigate();  // Initialize useNavigate hook
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch Project from API
@@ -179,6 +179,7 @@ const AddTask = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const token = localStorage.getItem("auth_token");
 
         if (!token) {
@@ -187,18 +188,31 @@ const AddTask = () => {
         }
 
         try {
-            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const config = {
+                headers: { Authorization: `Bearer ${token}` },
+            };
+
             const response = await axios.post(
                 "https://phplaravel-1340915-4916922.cloudwaysapps.com/api/tasks",
-                formData,
+                {
+                    subject: formData.subject,
+                    start_date: formData.start_date,
+                    due_date: formData.due_date,
+                    task_description: task_description,  // Include description separately
+                    priority: formData.priority,
+                    status: formData.status,
+                    project_id: formData.project_id,  // Extract customer ID directly
+                    assignees: formData.assignees.map((user) => user.value),
+                    attach_file: formData.attach_file,
+                },
                 config
             );
 
             if (response.status === 200 || response.status === 201) {
                 alert("Task added successfully!");
-                navigate("/tasks");
+                navigate("/tasks");  // Navigate after success
             } else {
-                alert("Failed to add task");
+                alert("Failed to add tasks");
             }
         } catch (error) {
             console.error("Error submitting the form:", error);
@@ -257,7 +271,7 @@ const AddTask = () => {
                                 id="projects"
                                 onChange={handleProjectChange}
                             />
-                            
+
                         </div>
                         <div>
                             <label htmlFor="start_date" className="form-label">Start Date</label>
