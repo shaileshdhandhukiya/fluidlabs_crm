@@ -13,12 +13,16 @@ const DonutChart = ({ height = 113, projectAnalytics }) => {
   }
 
   // Extract series data from projectAnalytics
-  const series = [
-    projectAnalytics.completed_projects || 0, // Default to 0 if undefined
-    projectAnalytics.pending_projects || 0, // Default to 0 if undefined
-  ];
+  const completedProjects = projectAnalytics?.completed_projects || 0;
+  const pendingProjects = projectAnalytics?.pending_projects || 0;
 
-  const totalProjects = series.reduce((a, b) => a + b, 0); // Calculate total projects
+  const series = [completedProjects, pendingProjects]; // Use completed and pending values
+
+  // Calculate total projects
+  const totalProjects = completedProjects + pendingProjects;
+
+  console.log(totalProjects);
+  
 
   const options = {
     labels: ["Completed Projects", "Pending Projects"],
@@ -46,14 +50,27 @@ const DonutChart = ({ height = 113, projectAnalytics }) => {
               fontFamily: "Inter",
               color: isDark ? "#cbd5e1" : "#475569",
             },
+            value: {
+              show: true,
+              fontSize: '16px',
+              fontFamily: 'Helvetica, Arial, sans-serif',
+              fontWeight: 400,
+              color: undefined,
+              offsetY: 16,
+              formatter: function (val) {
+                return val
+              }
+            },
             total: {
               show: true,
               fontSize: "10px",
               label: "Total", // Optionally add a label
               color: isDark ? "#cbd5e1" : "#475569",
-              formatter() {
-                return totalProjects; // Return actual total
-              },
+              formatter: function (w) {
+                return w.globals.seriesTotals.reduce((a, b) => {
+                  return a + b
+                }, 0)
+              }
             },
           },
         },
