@@ -71,6 +71,12 @@ export const menuItems = [
     link: "subscriptions",
   },
   {
+    title: "Maintanance",
+    isHide: true,
+    icon: "heroicons-outline:adjustments",
+    link: "maintanance",
+  },
+  {
     title: "Roles",
     isHide: true,
     icon: "heroicons-outline:shield-check",
@@ -79,7 +85,7 @@ export const menuItems = [
   {
     title: "Settings",
     isHide: true,
-    icon: "heroicons-outline:clipboard-check",
+    icon: "heroicons-outline:cog",
     link: "settings",
   },
 ];

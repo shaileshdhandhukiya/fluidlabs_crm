@@ -5,6 +5,9 @@ import UserManagement from '../src/pages/users/edit-user';
 // home pages  & dashboard
 //import Dashboard from "./pages/dashboard";
 const Dashboard = lazy(() => import("./pages/dashboard"));
+
+const Maintanance = lazy(() => import("./pages/Maintenance/Maintenance"));
+const Settings = lazy(() => import("./pages/settings/index"));
 const AddProject = lazy(() => import("./pages/projects/AddProject"));
 const Customers = lazy(() => import("./pages/customers/customers"));
 const AddCustomers = lazy(() => import("./pages/customers/addcustomer"));
@@ -101,7 +104,7 @@ const UnderConstructionPage = lazy(() =>
 const BlogPage = lazy(() => import("./pages/utility/blog"));
 const BlogDetailsPage = lazy(() => import("./pages/utility/blog/blog-details"));
 const FaqPage = lazy(() => import("./pages/utility/faq"));
-const Settings = lazy(() => import("./pages/utility/settings"));
+
 const IconPage = lazy(() => import("./pages/icons"));
 const NotificationPage = lazy(() => import("./pages/utility/notifications"));
 const ChangelogPage = lazy(() => import("./pages/changelog"));
@@ -193,6 +196,7 @@ function App() {
         />
         <Route path="/*" element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="maintanance" element={<Maintanance />} />
           <Route path="add-project" element={<AddProject />} />
           <Route path="projects" element={<Projects />} />
           <Route path="edit-project/:id" element={<EditProjects />} />
