@@ -1,31 +1,38 @@
 import React, { useState, useEffect } from "react";
 import Card from "@/components/ui/Card";
-import Icon from "@/components/ui/Icon";
 import GroupChart4 from "@/components/partials/widget/chart/group-chart-4";
 import DonutChart from "./donut-chart";
-import BasicArea from "../chart/appex-chart/BasicArea";
-import SelectMonth from "@/components/partials/SelectMonth";
-import MessageList from "@/components/partials/widget/message-list";
-import TrackingParcel from "../../components/partials/widget/activity";
-import TeamTable from "@/components/partials/Table/team-table";
-import { meets, files } from "@/constant/data";
 import CalendarView from "@/components/partials/widget/CalendarView";
 import HomeBredCurbs from "./HomeBredCurbs";
 import { getRequest } from '../../utils/apiHelper';
 import ProjectList from './Project-list';
 import TaskList from './task-list';
+import RevenueBarChart from "./revenue-bar-chart";
+import Switch from "@/components/ui/Switch";
+import TeamsTable from "./team-table";
 
 const ProjectPage = () => {
+
+  const [checked, setChecked] = useState(false);
 
   const [data, setData] = useState({
     projects: [],
     tasks: [],
-    charts:[],
+    charts: [],
   });
+
+  const [chartData, setChartData] = useState({
+    series: [],
+    categories: []
+  });
+
   const [loading, setLoading] = useState(true);
+
+  const [usersHoursData, setUsersHoursData] = useState([]); 
 
   // Fetch data from API once
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await getRequest('/api/dashboard/analytics');
@@ -33,7 +40,7 @@ const ProjectPage = () => {
           setData({
             projects: response.data.recent_projects,
             tasks: response.data.recent_tasks,
-            charts:response.data.project_analytics,
+            charts: response.data.project_analytics,
           });
         }
       } catch (error) {
@@ -44,6 +51,46 @@ const ProjectPage = () => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsersHoursData = async () => {
+      try {
+        const response = await getRequest('/api/allusershours');
+        if (response.success) {
+          const usersData = response.data;
+
+          setUsersHoursData(usersData);
+
+          console.log(usersData);
+          
+
+          // Map data to series and categories for the chart
+          const userNames = usersData.map((user) => user.name);
+          const totalHours = usersData.map((user) => user.total_hours);
+          const consumedHours = usersData.map((user) => user.consumed_hours);
+          const remainingHours = usersData.map((user) => user.remaining_hours);
+          const overtimeHours = usersData.map((user) => user.overtime_hours);
+
+          // Set chart data
+          setChartData({
+            series: [
+              { name: "Total Hours", data: totalHours },
+              { name: "Consumed Hours", data: consumedHours },
+              { name: "Remaining Hours", data: remainingHours },
+              { name: "Overtime Hours", data: overtimeHours },
+            ],
+            categories: userNames,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user hours data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsersHoursData();
   }, []);
 
   return (
@@ -58,28 +105,36 @@ const ProjectPage = () => {
                   <GroupChart4 />
                 </div>
               </div>
-
               <div className="xl:col-span-4 col-span-12">
                 <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-4">
                   <span className="block dark:text-slate-400 text-sm text-slate-600">
                     Progress
                   </span>
-                  <DonutChart projectAnalytics={data.charts} height={113}/>
+                  <DonutChart projectAnalytics={data.charts} height={113} />
                 </div>
               </div>
             </div>
           </Card>
-          <Card title="Team members" noborder>
-            {/* <TeamTable /> */}
-          </Card>
-          <Card title="Calender" noborder>
-            <CalendarView />
+          <Card title="Team Report" headerslot={<Switch
+            value={checked}
+            onChange={() => setChecked(!checked)}
+            checkedChildren="Show Table"
+            unCheckedChildren="Show Chart"
+            style={{ marginBottom: "16px" }}
+          />} noborder >
+
+            {checked ? (
+              <TeamsTable usersHoursData={usersHoursData} loading={loading} />
+            ) : (
+              <RevenueBarChart chartData={chartData} />
+            )}
+
           </Card>
         </div>
         <div className="lg:col-span-4 col-span-12 space-y-5">
           <Card title="Tasks">
             <div className="mb-12">
-            {!loading && (
+              {!loading && (
                 <>
                   <TaskList tasks={data.tasks} />
                 </>
@@ -88,9 +143,9 @@ const ProjectPage = () => {
           </Card>
           <Card title="Projects">
             <div className="mb-12">
-            {!loading && (
+              {!loading && (
                 <>
-                   <ProjectList projects={data.projects} />
+                  <ProjectList projects={data.projects} />
                 </>
               )}
             </div>
