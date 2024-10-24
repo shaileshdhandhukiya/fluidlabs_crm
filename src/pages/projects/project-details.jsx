@@ -81,11 +81,17 @@ const ProjectDetailsPage = () => {
       accessor: "assignees",
       Cell: ({ cell }) => (
         <div className="inline-flex items-center">
-          {cell.value.length > 0 ? (
+          {cell.value && cell.value.length > 0 ? (
             cell.value.map((assignee, index) => (
-              <Tooltip key={index} content={`Member: ${assignee}`} placement="top" arrow animation="shift-away">
+              <Tooltip
+                key={index}
+                content={`Member: ${assignee?.label || "N/A"}`} // Use optional chaining and default value
+                placement="top"
+                arrow
+                animation="shift-away"
+              >
                 <span className="w-7 h-7 rounded-full bg-slate-600 text-white text-center flex items-center justify-center">
-                  {assignee}
+                  {assignee?.label?.charAt(0) || "?"} {/* Handle undefined or missing labels */}
                 </span>
               </Tooltip>
             ))
@@ -93,7 +99,7 @@ const ProjectDetailsPage = () => {
             <span>No Members</span>
           )}
         </div>
-      ),
+      )
     },
     {
       Header: "Status",
@@ -361,44 +367,57 @@ const ProjectDetailsPage = () => {
                     {...getTableProps()}
                   >
                     <thead className="bg-slate-200 dark:bg-slate-700">
-                      {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                          {headerGroup.headers.map((column) => (
-                            <th
-                              {...column.getHeaderProps(column.getSortByToggleProps())}
-                              scope="col"
-                              className="table-th"
-                            >
-                              {column.render("Header")}
-                              <span>
-                                {column.isSorted
-                                  ? column.isSortedDesc
-                                    ? " 🔽"
-                                    : " 🔼"
-                                  : ""}
-                              </span>
-                            </th>
-                          ))}
-                        </tr>
-                      ))}
+                      {headerGroups.map((headerGroup) => {
+                        const { key: headerGroupKey, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+
+                        return (
+                          <tr key={headerGroupKey} {...headerGroupProps}>
+                            {headerGroup.headers.map((column) => {
+                              const { key: columnKey, ...columnProps } = column.getHeaderProps(column.getSortByToggleProps());
+
+                              return (
+                                <th key={columnKey} {...columnProps} scope="col" className="table-th">
+                                  {column.render("Header")}
+                                  <span>
+                                    {column.isSorted
+                                      ? column.isSortedDesc
+                                        ? " 🔽"
+                                        : " 🔼"
+                                      : ""}
+                                  </span>
+                                </th>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
                     </thead>
+
                     <tbody
                       className="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700"
                       {...getTableBodyProps()}
                     >
                       {page.map((row) => {
                         prepareRow(row);
+                        const { key: rowKey, ...rowProps } = row.getRowProps();
+
                         return (
-                          <tr {...row.getRowProps()}>
-                            {row.cells.map((cell) => (
-                              <td {...cell.getCellProps()} className="table-td">
-                                {cell.render("Cell")}
-                              </td>
-                            ))}
+                          <tr key={rowKey} {...rowProps}>
+                            {row.cells.map((cell) => {
+                              const { key: cellKey, ...cellProps } = cell.getCellProps();
+
+                              return (
+                                <td key={cellKey} {...cellProps} className="table-td">
+                                  {cell.render("Cell")}
+                                </td>
+                              );
+                            })}
                           </tr>
                         );
                       })}
                     </tbody>
+
+
                   </table>
                 </div>
               </div>
